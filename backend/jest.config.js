@@ -6,5 +6,8 @@ module.exports = {
     collectCoverageFrom: [
         'src/**/*.js',
         '!src/infrastructure/**/*.js'
-    ]
+    ],
+    transform: {
+        "^.+\\.js$": "babel-jest"
+    },
 };
