@@ -1,0 +1,30 @@
+.styleContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+
+.styleBox {
+    width: 20%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #B0E0E6;
+    padding: 100px;
+    border: 2px solid #111111;
+}
+
+.positionCenter {
+    position: center;
+}
+
+.styleButton {
+    border-radius: 10px;
+    background: #fffafc;
+    margin-top: 8px;
+    border: 1px solid #111111;
+    color: black;
+    width: -moz-available;
+}
