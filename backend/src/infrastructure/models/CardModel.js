@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const categories = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH', 'SIXTH', 'SEVENTH', 'DONE'];
 
 const CardSchema = new mongoose.Schema({
-    id: { type: Number, required: true, unique: true },
     question: { type: String, required: true },
     answer: { type: String, required: true },
     tag: { type: String },
