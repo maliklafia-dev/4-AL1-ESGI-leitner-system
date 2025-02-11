@@ -1,7 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "directories": {
     "test": "tests"
   },
@@ -20,7 +21,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongoose": "^8.9.5",
+    "mongoose": "^8.10.0",
     "uuid": "^11.0.5"
   },
   "devDependencies": {
