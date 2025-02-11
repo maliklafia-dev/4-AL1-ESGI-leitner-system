@@ -1,40 +1,49 @@
-const Card = require('../models/Card');
+// src/domain/services/CardService.js
+import CardServicePort from '../ports/primary/CardServicePort.js';
+import Card from '../models/Card.js';
 
-class CardService {
-    constructor() {
-        this.cards = new Map();
+class CardService extends CardServicePort {
+    constructor(cardRepository) {
+        super();
+        this.cardRepository = cardRepository;
     }
 
-    createCard(cardData) {
+    async createCard(cardData) {
         const card = new Card(cardData);
-        this.cards.set(card.id, card);
-        return card;
+        return this.cardRepository.save(card);
     }
 
-    getCardById(cardId) {
-        if (!this.cards.has(cardId)) {
+    async getCardById(cardId) {
+        const card = await this.cardRepository.findById(cardId);
+        if (!card) {
             throw new Error('Card not found');
         }
-        return this.cards.get(cardId);
-    }
-
-    updateCard(cardId, updatedData) {
-        const card = this.getCardById(cardId);
-        Object.assign(card, updatedData);
         return card;
     }
 
-    answerCardCorrectly(cardId) {
-        const card = this.getCardById(cardId);
+    async updateCard(cardId, updatedData) {
+        const existingCard = await this.getCardById(cardId);
+        const updatedCard = new Card({
+            ...updatedData,
+            id: cardId,
+            category: existingCard.category,
+            lastAnsweredAt: existingCard.lastAnsweredAt,
+            createdAt: existingCard.createdAt
+        });
+        return this.cardRepository.save(updatedCard);
+    }
+
+    async answerCardCorrectly(cardId) {
+        const card = await this.getCardById(cardId);
         card.answerCorrectly();
-        return card;
+        return this.cardRepository.save(card);
     }
 
-    answerCardIncorrectly(cardId) {
-        const card = this.getCardById(cardId);
+    async answerCardIncorrectly(cardId) {
+        const card = await this.getCardById(cardId);
         card.answerIncorrectly();
-        return card;
+        return this.cardRepository.save(card);
     }
 }
 
-module.exports = CardService;
+export default CardService;

@@ -1,17 +1,18 @@
-const { v4: uuidv4 } = require('uuid');
+import{v4 as uuidv4} from 'uuid';
 
 class Card {
     static CATEGORIES = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH', 'SIXTH', 'SEVENTH', 'DONE'];
 
     constructor(props) {
         this.validateProps(props);
-
-        this.id = uuidv4();
+        this.id = props.id || uuidv4();
         this.question = props.question;
         this.answer = props.answer;
         this.tag = props.tag;
-        this.category = 'FIRST';
-        this.lastAnsweredAt = null;
+        this.category = props.category || 'FIRST';
+        this.lastAnsweredAt = props.lastAnsweredAt || null;
+        this.createdAt = props.createdAt || new Date();
+        this.updatedAt = props.updatedAt || new Date();
     }
 
     validateProps(props) {
@@ -37,4 +38,4 @@ class Card {
     }
 }
 
-module.exports = Card;
+export default Card;

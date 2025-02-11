@@ -87,4 +87,4 @@ class Quiz {
     }
 }
 
-module.exports = Quiz;
+export default Quiz;

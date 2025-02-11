@@ -5,6 +5,7 @@
   "directories": {
     "test": "tests"
   },
+  "type": "module",
   "scripts": {
     "start": "node src/infrastructure/server.js",
     "dev": "nodemon src/infrastructure/server.js",
@@ -12,7 +13,6 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
-  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -22,6 +22,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.10.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.0.5"
   },
   "devDependencies": {

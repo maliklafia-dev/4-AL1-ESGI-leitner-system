@@ -1,23 +1,23 @@
-class CardServicePort {
-    createCard(cardData) {
+class CardRepositoryPort {
+    save(card) {
         throw new Error('Method not implemented');
     }
 
-    getCardById(cardId) {
+    findById(id) {
         throw new Error('Method not implemented');
     }
 
-    updateCard(cardId, updatedData) {
+    findAll() {
         throw new Error('Method not implemented');
     }
 
-    answerCardCorrectly(cardId) {
+    delete(id) {
         throw new Error('Method not implemented');
     }
 
-    answerCardIncorrectly(cardId) {
+    exists(id) {
         throw new Error('Method not implemented');
     }
 }
 
-export default CardServicePort;
+export default CardRepositoryPort;
