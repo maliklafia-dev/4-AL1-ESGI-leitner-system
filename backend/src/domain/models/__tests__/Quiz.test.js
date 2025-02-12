@@ -1,5 +1,5 @@
 import Card from "../Card";
-import Quiz from "../Quizz";
+import Quiz from "../Quiz";
 const { v4: uuidv4 } = require('uuid');
 
 describe('Quiz Domain Entity', () => {
