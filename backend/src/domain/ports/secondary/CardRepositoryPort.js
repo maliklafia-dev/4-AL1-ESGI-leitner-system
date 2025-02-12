@@ -1,4 +1,5 @@
 class CardRepositoryPort {
+    
     save(card) {
         throw new Error('Method not implemented');
     }

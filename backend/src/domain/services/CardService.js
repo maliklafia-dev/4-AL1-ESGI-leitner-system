@@ -8,6 +8,11 @@ class CardService extends CardServicePort {
         this.cardRepository = cardRepository;
     }
 
+    async getAllCards(){
+        return await this.cardRepository.findAll();
+    }
+  
+      
     async createCard(cardData) {
         const card = new Card(cardData);
         return this.cardRepository.save(card);
