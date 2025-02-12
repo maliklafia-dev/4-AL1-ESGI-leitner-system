@@ -1,4 +1,4 @@
-const Card = require('../models/Card');
+const Card = require('../../models/Card');
 
 class CardService {
     constructor() {
@@ -16,6 +16,14 @@ class CardService {
             throw new Error('Card not found');
         }
         return this.cards.get(cardId);
+    }
+
+    getAllCards(tags = []) {
+        let cardsArray = Array.from(this.cards.values());
+        if (tags.length > 0) {
+            cardsArray = cardsArray.filter(card => tags.includes(card.tag));
+        }
+        return cardsArray;
     }
 
     updateCard(cardId, updatedData) {

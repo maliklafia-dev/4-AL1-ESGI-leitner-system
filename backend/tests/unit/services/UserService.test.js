@@ -1,5 +1,5 @@
-const UserService = require('../../src/domain/services/UserService');
-const User = require('../../src/domain/models/User');
+const UserService = require('../../../src/domain/services/primary/UserService');
+const User = require('../../../src/domain/models/User');
 
 describe('UserService', () => {
     let userService;

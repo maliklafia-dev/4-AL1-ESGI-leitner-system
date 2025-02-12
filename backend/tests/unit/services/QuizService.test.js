@@ -1,6 +1,6 @@
-const QuizService = require('../../src/domain/services/QuizService');
-const Quiz = require('../../src/domain/models/Quiz');
-const Card = require('../../src/domain/models/Card');
+const QuizService = require('../../../src/domain/services/primary/QuizService');
+const Quiz = require('../../../src/domain/models/Quiz');
+const Card = require('../../../src/domain/models/Card');
 
 describe('QuizService', () => {
     let quizService;

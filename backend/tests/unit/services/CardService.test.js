@@ -1,5 +1,5 @@
-const CardService = require('../../src/domain/services/CardService');
-const Card = require('../../src/domain/models/Card');
+const CardService = require('../../../src/domain/services/primary/CardService');
+const Card = require('../../../src/domain/models/Card');
 
 describe('CardService', () => {
     let cardService;
