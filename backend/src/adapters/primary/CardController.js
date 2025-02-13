@@ -1,6 +1,7 @@
 // src/adapters/primary/CardController.js
 import express from 'express';
 
+
 class CardController {
     constructor(cardService) {
         this.cardService = cardService;
@@ -16,6 +17,16 @@ class CardController {
         this.router.post('/:id/correct', this.answerCardCorrectly.bind(this));
         this.router.post('/:id/incorrect', this.answerCardIncorrectly.bind(this));
     }
+/**
+ * @swagger
+ * /api/cards:
+ *   get:
+ *     summary: Retrieve a list of cards
+ *     tags: [Cards]
+ *     responses:
+ *       200:
+ *         description: A list of cards
+ */
     async getAllCards(req, res, next) {
         try {
             console.log("GET /api/cards endpoint hit");

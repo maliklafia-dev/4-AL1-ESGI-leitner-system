@@ -6,6 +6,9 @@ import CardService from '../domain/services/CardService.js';
 import MongoCardRepository from '../adapters/secondary/repositories/MongoCardRepository.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import MongoQuizRepository from '../adapters/secondary/repositories/MongoQuizRepository.js';
+import QuizService from '../domain/services/QuizService.js'; 
+
 
 dotenv.config();
 
@@ -41,8 +44,15 @@ const connectDB = async () => {
         const cardRepository = new MongoCardRepository(mongoose.connection);
         const cardService = new CardService(cardRepository);
         const cardController = new CardController(cardService);
-
         app.use('/api/cards', cardController.getRouter());
+
+        const quizRepository = new MongoQuizRepository(mongoose.connection);
+        const quizService = new QuizService(quizRepository);
+       
+
+
+
+        
 
     } catch (error) {
         console.error("MongoDB Connection Error:", error);

@@ -1,4 +1,4 @@
-const Quiz = require('../models/Quiz');
+import Quiz from '../models/Quiz.js';
 
 class QuizService {
     constructor() {
@@ -42,4 +42,4 @@ class QuizService {
     }
 }
 
-module.exports = QuizService;
+export default QuizService;

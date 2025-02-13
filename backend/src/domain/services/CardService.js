@@ -1,4 +1,3 @@
-// src/domain/services/CardService.js
 import CardServicePort from '../ports/primary/CardServicePort.js';
 import Card from '../models/Card.js';
 
