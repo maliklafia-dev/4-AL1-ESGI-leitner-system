@@ -29,6 +29,9 @@ seeds: seed-users seed-cards seed-quizzes
 test:
 	$(TEST_CMD)
 
+lint:
+	$(NPM) run lint
+
 format:
 	$(NPM) run format
 
