@@ -1,7 +1,7 @@
 import QuizRepositoryPort from '../../../domain/ports/secondary/QuizRepositoryPort.js';
 import Quiz from '../../../domain/models/Quiz.js';
 
-class MongoQuizRepository extends QuizRepositoryPort {
+class QuizRepository extends QuizRepositoryPort {
   constructor(mongoClient) {
     super();
     this.collection = mongoClient.db.collection('quizes');
@@ -54,4 +54,4 @@ class MongoQuizRepository extends QuizRepositoryPort {
   }
 }
 
-export default MongoQuizRepository;
+export default QuizRepository;

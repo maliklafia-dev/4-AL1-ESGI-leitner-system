@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import CardController from '../adapters/primary/CardController.js';
 import CardService from '../domain/services/CardService.js';
-import MongoCardRepository from '../adapters/secondary/repositories/MongoCardRepository.js';
+import CardRepository from '../adapters/secondary/repositories/CardRepository.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import MongoQuizRepository from '../adapters/secondary/repositories/MongoQuizRepository.js';
+import QuizRepository from '../adapters/secondary/repositories/QuizRepository.js';
 import QuizService from '../domain/services/QuizService.js'; 
 
 
@@ -41,12 +41,12 @@ const connectDB = async () => {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("MongoDB Connected");
 
-        const cardRepository = new MongoCardRepository(mongoose.connection);
+        const cardRepository = new CardRepository(mongoose.connection);
         const cardService = new CardService(cardRepository);
         const cardController = new CardController(cardService);
         app.use('/api/cards', cardController.getRouter());
 
-        const quizRepository = new MongoQuizRepository(mongoose.connection);
+        const quizRepository = new QuizRepository(mongoose.connection);
         const quizService = new QuizService(quizRepository);
        
 

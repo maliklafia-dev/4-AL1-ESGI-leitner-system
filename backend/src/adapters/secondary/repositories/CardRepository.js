@@ -1,7 +1,7 @@
 import CardRepositoryPort from '../../../domain/ports/secondary/CardRepositoryPort.js';
 import Card from '../../../domain/models/Card.js';
 
-class MongoCardRepository extends CardRepositoryPort {
+class CardRepository extends CardRepositoryPort {
     constructor(mongoClient) {
         super();
         this.collection = mongoClient.db.collection('cards');
@@ -69,4 +69,4 @@ class MongoCardRepository extends CardRepositoryPort {
     }
 }
 
-export default  MongoCardRepository ;
+export default  CardRepository ;
