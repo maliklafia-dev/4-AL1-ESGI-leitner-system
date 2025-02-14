@@ -24,3 +24,9 @@ yarn-error.log*
 # Editor/IDE-specific
 .vscode/
 .idea/
+.DS_Store
+
+# Dépendances ESLint & Prettier
+.eslintcache
+.prettierignore
+
