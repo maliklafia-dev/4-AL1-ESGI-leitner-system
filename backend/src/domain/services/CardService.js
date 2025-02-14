@@ -6,6 +6,7 @@ class CardService extends CardServicePort {
         super();
         this.cardRepository = cardRepository;
     }
+   
 
     async getAllCards(){
         return await this.cardRepository.findAll();
@@ -13,9 +14,20 @@ class CardService extends CardServicePort {
   
       
     async createCard(cardData) {
-        const card = new Card(cardData);
+        if (!cardData.question || !cardData.answer) {
+            throw new Error('Card must have both question and answer');
+        }
+
+        const card = new Card({
+            question: cardData.question,
+            answer: cardData.answer,
+            tag: cardData.tag,
+            category: 'FIRST'
+        });
+
         return this.cardRepository.save(card);
     }
+
 
     async getCardById(cardId) {
         const card = await this.cardRepository.findById(cardId);

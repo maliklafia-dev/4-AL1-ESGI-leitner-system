@@ -1,63 +1,160 @@
-const CardService = require('../../src/domain/services/CardService');
-const Card = require('../../src/domain/models/Card');
+import CardService from '../../src/domain/services/CardService.js';
+import Card from '../../src/domain/models/Card.js';
 
 describe('CardService', () => {
     let cardService;
-
+    let cardRepositoryMock;
+    
     beforeEach(() => {
-        cardService = new CardService();
+        // Create mock repository with implementations
+        cardRepositoryMock = {
+            save: jest.fn(card => Promise.resolve(card)),
+            findById: jest.fn(),
+            findAll: jest.fn()
+        };
+        
+        // Initialize service with mock repository
+        cardService = new CardService(cardRepositoryMock);
     });
 
-    test('should create a new card', () => {
-        const cardData = { question: "What is TDD?", answer: "Test-Driven Development", tag: "testing" };
-        const card = cardService.createCard(cardData);
+    describe('createCard', () => {
+        test('should create a new card with correct initial values', async () => {
+            const cardData = {
+                question: "What is TDD?",
+                answer: "Test-Driven Development",
+                tag: "testing"
+            };
 
-        expect(card).toBeInstanceOf(Card);
-        expect(card.question).toBe(cardData.question);
-        expect(card.answer).toBe(cardData.answer);
-        expect(card.tag).toBe(cardData.tag);
-        expect(card.category).toBe('FIRST');
+            const createdCard = await cardService.createCard(cardData);
+
+            expect(createdCard.question).toBe(cardData.question);
+            expect(createdCard.answer).toBe(cardData.answer);
+            expect(createdCard.tag).toBe(cardData.tag);
+            expect(createdCard.category).toBe('FIRST');
+            expect(cardRepositoryMock.save).toHaveBeenCalled();
+        });
+
+        test('should throw error if required fields are missing', async () => {
+            const invalidCardData = { question: "What is TDD?" };
+            
+            await expect(cardService.createCard(invalidCardData))
+                .rejects
+                .toThrow('Card must have both question and answer');
+        });
     });
 
-    test('should retrieve a card by ID', () => {
-        const cardData = { question: "What is SOLID?", answer: "Principles of OOP", tag: "design" };
-        const createdCard = cardService.createCard(cardData);
+    describe('getCardById', () => {
+        test('should retrieve a card by ID', async () => {
+            const mockCard = {
+                id: 'test-id',
+                question: "What is SOLID?",
+                answer: "Principles of OOP",
+                tag: "design",
+                category: 'FIRST'
+            };
 
-        const retrievedCard = cardService.getCardById(createdCard.id);
-        expect(retrievedCard).toEqual(createdCard);
+            // Mock the findById implementation to return our mock card
+            cardRepositoryMock.findById.mockResolvedValue(mockCard);
+
+            const retrievedCard = await cardService.getCardById('test-id');
+            
+            expect(retrievedCard).toEqual(mockCard);
+            expect(cardRepositoryMock.findById).toHaveBeenCalledWith('test-id');
+        });
+
+        test('should throw error when card not found', async () => {
+            // Mock findById to return null, simulating no card found
+            cardRepositoryMock.findById.mockResolvedValue(null);
+
+            await expect(cardService.getCardById('nonexistent-id'))
+                .rejects
+                .toThrow('Card not found');
+        });
     });
 
-    test('should update a card', () => {
-        const cardData = { question: "Old Question", answer: "Old Answer", tag: "general" };
-        const createdCard = cardService.createCard(cardData);
+    describe('updateCard', () => {
+        test('should update card with new values', async () => {
+            const existingCard = {
+                id: 'test-id',
+                question: "Old Question",
+                answer: "Old Answer",
+                tag: "general",
+                category: 'FIRST',
+                lastAnsweredAt: new Date(),
+                createdAt: new Date()
+            };
 
-        const updatedData = { question: "New Question", answer: "New Answer" };
-        const updatedCard = cardService.updateCard(createdCard.id, updatedData);
+            const updateData = {
+                question: "New Question",
+                answer: "New Answer"
+            };
 
-        expect(updatedCard.question).toBe(updatedData.question);
-        expect(updatedCard.answer).toBe(updatedData.answer);
+            cardRepositoryMock.findById.mockResolvedValue(existingCard);
+
+            const updatedCard = await cardService.updateCard('test-id', updateData);
+
+            expect(updatedCard.question).toBe(updateData.question);
+            expect(updatedCard.answer).toBe(updateData.answer);
+            expect(updatedCard.category).toBe(existingCard.category);
+            expect(cardRepositoryMock.save).toHaveBeenCalled();
+        });
     });
 
-    test('should move a card to the next category when answered correctly', () => {
-        const cardData = { question: "What is DDD?", answer: "Domain-Driven Design", tag: "architecture" };
-        const createdCard = cardService.createCard(cardData);
+    describe('answerCard', () => {
+        test('should handle correct answer', async () => {
+            const card = {
+                id: 'test-id',
+                question: "What is DDD?",
+                answer: "Domain-Driven Design",
+                category: 'FIRST',
+                answerCorrectly: jest.fn(function() {
+                    this.category = 'SECOND';
+                    return this;
+                })
+            };
 
-        const updatedCard = cardService.answerCardCorrectly(createdCard.id);
+            cardRepositoryMock.findById.mockResolvedValue(card);
 
-        expect(updatedCard.category).toBe('SECOND');
+            const updatedCard = await cardService.answerCardCorrectly('test-id');
+            
+            expect(updatedCard.category).toBe('SECOND');
+            expect(cardRepositoryMock.save).toHaveBeenCalled();
+        });
+
+        test('should handle incorrect answer', async () => {
+            const card = {
+                id: 'test-id',
+                question: "What is Clean Code?",
+                answer: "Readable code",
+                category: 'SECOND',
+                answerIncorrectly: jest.fn(function() {
+                    this.category = 'FIRST';
+                    return this;
+                })
+            };
+
+            cardRepositoryMock.findById.mockResolvedValue(card);
+
+            const updatedCard = await cardService.answerCardIncorrectly('test-id');
+            
+            expect(updatedCard.category).toBe('FIRST');
+            expect(cardRepositoryMock.save).toHaveBeenCalled();
+        });
     });
 
-    test('should reset card to category FIRST when answered incorrectly', () => {
-        const cardData = { question: "What is Clean Code?", answer: "Readable and maintainable code", tag: "best-practices" };
-        const createdCard = cardService.createCard(cardData);
-
-        cardService.answerCardCorrectly(createdCard.id); // Pass to category 2
-        const resetCard = cardService.answerCardIncorrectly(createdCard.id);
-
-        expect(resetCard.category).toBe('FIRST');
-    });
-
-    test('should throw an error if card not found', () => {
-        expect(() => cardService.getCardById('nonexistent-id')).toThrow('Card not found');
+    describe('getAllCards', () => {
+        test('should retrieve all cards', async () => {
+            const mockCards = [
+                { id: '1', question: 'Q1', answer: 'A1', category: 'FIRST' },
+                { id: '2', question: 'Q2', answer: 'A2', category: 'SECOND' }
+            ];
+            
+            cardRepositoryMock.findAll.mockResolvedValue(mockCards);
+            
+            const cards = await cardService.getAllCards();
+            
+            expect(cards).toEqual(mockCards);
+            expect(cardRepositoryMock.findAll).toHaveBeenCalled();
+        });
     });
 });

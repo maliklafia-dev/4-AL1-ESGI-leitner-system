@@ -1,5 +1,5 @@
-const UserService = require('../../src/domain/services/UserService');
-const User = require('../../src/domain/models/User');
+import UserService from '../../src/domain/services/UserService.js';
+import User from '../../src/domain/models/User.js';
 
 describe('UserService', () => {
     let userService;

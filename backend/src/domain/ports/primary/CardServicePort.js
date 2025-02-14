@@ -1,4 +1,7 @@
 class CardServicePort {
+    async getAllCards() {
+        throw new Error('Method not implemented');
+    }
     createCard(cardData) {
         throw new Error('Method not implemented');
     }

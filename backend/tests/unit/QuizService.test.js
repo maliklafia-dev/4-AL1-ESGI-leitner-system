@@ -1,6 +1,6 @@
-const QuizService = require('../../src/domain/services/QuizService');
-const Quiz = require('../../src/domain/models/Quiz');
-const Card = require('../../src/domain/models/Card');
+import QuizService from '../../src/domain/services/QuizService.js';
+import Quiz from '../../src/domain/models/Quiz.js';
+import Card from '../../src/domain/models/Card.js';
 
 describe('QuizService', () => {
     let quizService;
