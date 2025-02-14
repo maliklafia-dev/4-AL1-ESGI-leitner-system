@@ -1,5 +1,5 @@
-import CardService from '../../src/domain/services/CardService.js';
-import Card from '../../src/domain/models/Card.js';
+import CardService from '../../../src/domain/services/CardService.js';
+import Card from '../../../src/domain/models/Card.js';
 
 describe('CardService', () => {
     let cardService;

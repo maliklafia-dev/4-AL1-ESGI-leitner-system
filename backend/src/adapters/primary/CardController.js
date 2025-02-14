@@ -1,119 +1,57 @@
 import express from 'express';
 
-
 class CardController {
     constructor(cardService) {
-        this.cardService = cardService;
         this.router = express.Router();
-        this.initializeRoutes();
+        this.cardService = cardService;
+
+        this.router.get('/cards', this.getAllCards.bind(this));
+        this.router.post('/cards', this.createCard.bind(this));
+        this.router.get('/cards/quizz', this.getQuizCards.bind(this));
+        this.router.patch('/cards/:cardId/answer', this.answerCard.bind(this));
     }
 
-    initializeRoutes() {
-        this.router.get('/', this.getAllCards.bind(this));
-        this.router.post('/', this.createCard.bind(this));
-        this.router.get('/:id', this.getCardById.bind(this));
-        this.router.put('/:id', this.updateCard.bind(this));
-        this.router.post('/:id/correct', this.answerCardCorrectly.bind(this));
-        this.router.post('/:id/incorrect', this.answerCardIncorrectly.bind(this));
-    }
-/**
- * @swagger
- * /api/cards:
- *   get:
- *     summary: Retrieve a list of cards
- *     tags: [Cards]
- *     responses:
- *       200:
- *         description: A list of cards
- */
-    async getAllCards(req, res, next) {
+    getAllCards(req, res) {
         try {
-            console.log("GET /api/cards endpoint hit");
-            const cards = await this.cardService.getAllCards();
-            console.log("Cards retrieved:", cards);
-            res.json(cards);
+            const tags = req.query.tags ? req.query.tags.split(',') : [];
+            const cards = this.cardService.getAllCards(tags);
+            res.status(200).json(cards);
         } catch (error) {
-            console.error("Error in GET /api/cards:", error);
-            next(error);
-        }
-    }
-    
-    async createCard(req, res, next) {
-        try {
-            const cardData = {
-                question: req.body.question,
-                answer: req.body.answer,
-                tag: req.body.tag
-            };
-
-            const card = await this.cardService.createCard(cardData);
-            res.status(201).json(card);
-        } catch (error) {
-            next(error);
+            res.status(400).json({ error: error.message });
         }
     }
 
-    async getCardById(req, res, next) {
+    createCard(req, res) {
         try {
-            const card = await this.cardService.getCardById(req.params.id);
-            res.json(card);
+            const newCard = this.cardService.createCard(req.body);
+            res.status(201).json(newCard);
         } catch (error) {
-            if (error.message === 'Card not found') {
-                res.status(404).json({ message: error.message });
-            } else {
-                next(error);
+            res.status(400).json({ error: error.message });
+        }
+    }
+
+    getQuizCards(req, res) {
+        try {
+            const date = req.query.date ? new Date(req.query.date) : new Date();
+            const cards = this.cardService.getCardsForQuiz(date);
+            res.status(200).json(cards);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+
+    answerCard(req, res) {
+        try {
+            const { isValid } = req.body;
+            if (isValid === undefined) {
+                return res.status(400).json({ error: 'isValid is required' });
             }
-        }
-    }
-
-    async updateCard(req, res, next) {
-        try {
-            const cardData = {
-                question: req.body.question,
-                answer: req.body.answer,
-                tag: req.body.tag
-            };
-
-            const card = await this.cardService.updateCard(req.params.id, cardData);
-            res.json(card);
+            this.cardService.answerCard(req.params.cardId, isValid);
+            res.status(204).send();
         } catch (error) {
-            if (error.message === 'Card not found') {
-                res.status(404).json({ message: error.message });
-            } else {
-                next(error);
-            }
+            res.status(400).json({ error: error.message });
         }
-    }
-
-    async answerCardCorrectly(req, res, next) {
-        try {
-            const card = await this.cardService.answerCardCorrectly(req.params.id);
-            res.json(card);
-        } catch (error) {
-            if (error.message === 'Card not found') {
-                res.status(404).json({ message: error.message });
-            } else {
-                next(error);
-            }
-        }
-    }
-
-    async answerCardIncorrectly(req, res, next) {
-        try {
-            const card = await this.cardService.answerCardIncorrectly(req.params.id);
-            res.json(card);
-        } catch (error) {
-            if (error.message === 'Card not found') {
-                res.status(404).json({ message: error.message });
-            } else {
-                next(error);
-            }
-        }
-    }
-
-    getRouter() {
-        return this.router;
     }
 }
 
-export default CardController;
+module.exports = new CardController().router;

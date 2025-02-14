@@ -9,7 +9,6 @@ import swaggerUi from 'swagger-ui-express';
 import QuizRepository from '../adapters/secondary/repositories/QuizRepository.js';
 import QuizService from '../domain/services/QuizService.js'; 
 
-
 dotenv.config();
 
 console.log("Starting server...");
@@ -44,17 +43,12 @@ const connectDB = async () => {
         const cardRepository = new CardRepository(mongoose.connection);
         const cardService = new CardService(cardRepository);
         const cardController = new CardController(cardService);
-        app.use('/api/cards', cardController.getRouter());
+        app.use('/cards', cardController.getRouter());
 
         const quizRepository = new QuizRepository(mongoose.connection);
         const quizService = new QuizService(quizRepository);
        
-
-
-
-        
-
-    } catch (error) {
+        } catch (error) {
         console.error("MongoDB Connection Error:", error);
         process.exit(1);
     }

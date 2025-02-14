@@ -1,5 +1,5 @@
-import UserService from '../../src/domain/services/UserService.js';
-import User from '../../src/domain/models/User.js';
+import UserService from '../../../src/domain/services/UserService.js';
+import User from '../../../src/domain/models/User.js';
 
 describe('UserService', () => {
     let userService;
