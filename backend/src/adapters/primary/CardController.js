@@ -86,7 +86,7 @@ class CardController {
      *         description: Server error
      */
     this.router.get("/cards", this.getAllCards.bind(this));
-     /**
+    /**
      * @swagger
      * /cards:
      *   post:
@@ -110,7 +110,7 @@ class CardController {
      *         description: Bad request
      */
     this.router.post("/cards", this.createCard.bind(this));
-      /**
+    /**
      * @swagger
      * /cards/quizz:
      *   get:
@@ -230,7 +230,6 @@ class CardController {
       res.status(400).json({ error: error.message });
     }
   }
-
 }
 
 export default CardController;
