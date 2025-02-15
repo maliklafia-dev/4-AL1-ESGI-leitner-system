@@ -1,33 +1,119 @@
 import express from "express";
-
-/** @swagger
- * tags:
- *   - name: Cards
- *     description: API for managing cards
- *   - name: Learning
- *     description: API for learning and quiz functionality
- */
 /**
  * @swagger
+ * openapi: 3.0.3
+ * info:
+ *   title: Leitner system
+ *   description: >
+ *     This API aim to provide feature to manage a graphical interface
+ *     for Leitner System.
+ *   version: 1.0.0
+ * servers:
+ *   - url: http://localhost:8080
+ *     description: Local server
+ * paths:
+ *   /cards:
+ *     get:
+ *       tags:
+ *         - Cards
+ *       summary: Get all cards
+ *       description: Used to fetch every cards with given tags. If no tags are provided, will fetch all cards.
+ *       parameters:
+ *         - in: query
+ *           name: tags
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: string
+ *           description: Tags of cards to find. If not present, all cards will be found.
+ *           example: tag1,tag2
+ *       responses:
+ *         '200':
+ *           description: Found cards by tag query
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: "#/components/schemas/Card"
+ *     post:
+ *       tags:
+ *         - Cards
+ *       summary: Create a card
+ *       description: Used to create a new card in the system. A new card will be present in the next quizz.
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CardUserData"
+ *       responses:
+ *         '201':
+ *           description: Created card
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: "#/components/schemas/Card"
+ *         '400':
+ *           description: Bad request
+ *   /cards/quizz:
+ *     get:
+ *       tags:
+ *         - Learning
+ *       summary: Cards for the day
+ *       description: Used to fetch all cards for a quizz at a given date. If no date is provided, quizz will be for today.
+ *       parameters:
+ *         - in: query
+ *           name: date
+ *           description: Date of quizz. If not provided, date will be today.
+ *           example: 2023-11-03
+ *           schema:
+ *             type: string
+ *             format: date
+ *       responses:
+ *         '200':
+ *           description: All cards of quizz for today
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: "#/components/schemas/Card"
+ *   /cards/{cardId}/answer:
+ *     patch:
+ *       tags:
+ *         - Learning
+ *       summary: Answer a question
+ *       description: Used to answer a question. Body indicate if user has answered correctly or not.
+ *       parameters:
+ *         - in: path
+ *           name: cardId
+ *           required: true
+ *           description: Id of answered card.
+ *           schema:
+ *             $ref: "#/components/schemas/CardId"
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: ["isValid"]
+ *               properties:
+ *                 isValid:
+ *                   type: boolean
+ *                   description: True if user has answered correctly, false otherwise
+ *       responses:
+ *         '204':
+ *           description: Answer has been taken into account
+ *         '400':
+ *           description: Bad request
+ *         '404':
+ *           description: Card not found
  * components:
  *   schemas:
- *     Card:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           description: The card's unique identifier
- *         question:
- *           type: string
- *           description: The question text
- *         answer:
- *           type: string
- *           description: The answer text
- *         tags:
- *           type: array
- *           items:
- *             type: string
- *           description: Tags associated with the card
+ *     CardId:
+ *       type: string
+ *       description: Generated identifier of a card
+ *       example: 592db6b8-3840-4705-806e-33e4ae21f26b
  *     CardUserData:
  *       type: object
  *       required:
@@ -36,147 +122,47 @@ import express from "express";
  *       properties:
  *         question:
  *           type: string
+ *           description: Question to be asked to the user during a quizz
+ *           example: "What is pair programming ?"
  *         answer:
  *           type: string
- *         tags:
- *           type: array
- *           items:
- *             type: string
- *     CardId:
+ *           description: Expected answer for the question
+ *           example: "A practice to work in pair on same computer."
+ *         tag:
+ *           type: string
+ *           description: A tag to group cards on same topic
+ *           example: "Teamwork"
+ *     Card:
+ *       allOf:
+ *         - type: object
+ *           required: ["id", "category"]
+ *           properties:
+ *             id:
+ *               $ref: "#/components/schemas/CardId"
+ *             category:
+ *               $ref: "#/components/schemas/Category"
+ *         - $ref: "#/components/schemas/CardUserData"
+ *     Category:
  *       type: string
- *       description: The unique identifier of a card
- */
-
-/**
- * @swagger
- * tags:
- *   - name: Cards
- *     description: API for managing cards
- *   - name: Learning
- *     description: API for quiz and learning functionality
+ *       description: Category of card indicating how many times you answered it and appearance frequency
+ *       example: FIRST
+ *       enum:
+ *         - FIRST
+ *         - SECOND
+ *         - THIRD
+ *         - FOURTH
+ *         - FIFTH
+ *         - SIXTH
+ *         - SEVENTH
+ *         - DONE
  */
 class CardController {
   constructor(cardService) {
     this.router = express.Router();
     this.cardService = cardService;
-    /**
-     * @swagger
-     * /cards:
-     *   get:
-     *     tags: [Cards]
-     *     summary: Get all cards
-     *     description: Used to fetch every card by given tags. If no tags are provided, it will fetch all cards.
-     *     parameters:
-     *       - in: query
-     *         name: tags
-     *         schema:
-     *           type: string
-     *         description: Comma-separated tags of cards to find. If not present, all cards will be returned.
-     *         example: tag1,tag2
-     *     responses:
-     *       200:
-     *         description: Found cards by tag query
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: array
-     *               items:
-     *                 $ref: '#/components/schemas/Card'
-     *       500:
-     *         description: Server error
-     */
     this.router.get("/cards", this.getAllCards.bind(this));
-    /**
-     * @swagger
-     * /cards:
-     *   post:
-     *     tags: [Cards]
-     *     summary: Create a card
-     *     description: Used to create a new card in the system. A new card will appear in the next quiz.
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             $ref: '#/components/schemas/CardUserData'
-     *     responses:
-     *       201:
-     *         description: Created card
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/components/schemas/Card'
-     *       400:
-     *         description: Bad request
-     */
     this.router.post("/cards", this.createCard.bind(this));
-    /**
-     * @swagger
-     * /cards/quizz:
-     *   get:
-     *     tags: [Learning]
-     *     summary: Cards for the day
-     *     description: Fetch all cards for a quiz on a given date. If no date is provided, the quiz is for today.
-     *     parameters:
-     *       - in: query
-     *         name: date
-     *         schema:
-     *           type: string
-     *           format: date
-     *         description: Date of the quiz. If not provided, today is used.
-     *         example: 2023-11-03
-     *     responses:
-     *       200:
-     *         description: Returns all cards for today's quiz
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: array
-     *               items:
-     *                 $ref: '#/components/schemas/Card'
-     *       400:
-     *         description: Bad request
-     */
     this.router.get("/cards/quizz", this.getQuizCards.bind(this));
-    /**
-     * @swagger
-     * /cards/{cardId}/answer:
-     *   patch:
-     *     tags: [Learning]
-     *     summary: Answer a question
-     *     description: Used to answer a question. The body indicates whether the user's answer is correct or not.
-     *     parameters:
-     *       - in: path
-     *         name: cardId
-     *         required: true
-     *         schema:
-     *           $ref: '#/components/schemas/CardId'
-     *         description: ID of the card being answered
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required: [isValid]
-     *             properties:
-     *               isValid:
-     *                 type: boolean
-     *                 description: True if the user answered correctly, false otherwise
-     *               userAnswer:
-     *                 type: string
-     *                 description: The user's answer text
-     *               forceValidation:
-     *                 type: boolean
-     *                 description: Force the system to re-check the answer
-     *     responses:
-     *       204:
-     *         description: The answer has been recorded
-     *       400:
-     *         description: Bad request
-     *       404:
-     *         description: Card not found
-     */
     this.router.patch("/cards/:cardId/answer", this.answerCard.bind(this));
   }
 
@@ -193,7 +179,7 @@ class CardController {
     try {
       if (!req.body || !req.body.question || !req.body.answer) {
         return res.status(400).json({
-          error: "Invalid data",
+          error: "Missing required fields: question and answer are required",
         });
       }
       const newCard = await this.cardService.createCard(req.body);
