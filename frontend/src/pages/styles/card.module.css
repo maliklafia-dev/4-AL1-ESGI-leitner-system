@@ -6,10 +6,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgb(79, 116, 81);
-    color: rgb(0, 0, 0);
-    border-radius: 2;
-    box-shadow: 3;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgb(3, 42, 109), rgb(18, 94, 43));
+    color: white;
+    border-radius: 10px;
     text-align: center;
 }
 
@@ -21,10 +21,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgb(138, 173, 57);
-    color: rgb(0, 0, 0);
-    border-radius: 2;
-    box-shadow: 3;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background: rgba(19, 116, 15, 0.938);
+    color: white;
+    border-radius: 10px;
     text-align: center;
     transform: rotateY(180deg);
 }
