@@ -3,7 +3,7 @@ import { useState } from "react";
 import CustomDialog from "./components/CustomDialog";
 import PopupAddQuiz from "./components/PopupAddQuiz";
 import PopupStartGame from "./components/PopupStartGame";
-import style from '../pages/styles/home.module.css'
+import style from "../pages/styles/home.module.css";
 
 export default function HomePage() {
   const [openQuiz, setOpenQuiz] = useState(false);
@@ -11,7 +11,7 @@ export default function HomePage() {
 
   const handlePopupOpenQuiz = () => {
     setOpenQuiz(true);
-  }
+  };
 
   const handlePopupCloseQuiz = () => {
     setOpenQuiz(false);
@@ -19,7 +19,7 @@ export default function HomePage() {
 
   const handleOpenPopupAddQuiz = () => {
     setAddQuiz(true);
-  }
+  };
 
   const handleClosePopupAddQuiz = () => {
     setAddQuiz(false);
@@ -32,23 +32,25 @@ export default function HomePage() {
           LEITNER STYSTEM
         </Typography>
         <p>Nice to see you Lilya</p>
-        <Button
-          className={style.styleButton}
-          onClick={handlePopupOpenQuiz}
-        >
+        <Button className={style.styleButton} onClick={handlePopupOpenQuiz}>
           Play
         </Button>
-        <Button
-          className={style.styleButton}
-          onClick={handleOpenPopupAddQuiz}
-        >
-          Add a Quiz 
+        <Button className={style.styleButton} onClick={handleOpenPopupAddQuiz}>
+          Add a Quiz
         </Button>
       </Box>
-      <CustomDialog title="LEITNER STYSTEM" open={openQuiz} onClose={handlePopupCloseQuiz}>
+      <CustomDialog
+        title="LEITNER STYSTEM"
+        open={openQuiz}
+        onClose={handlePopupCloseQuiz}
+      >
         <PopupStartGame />
       </CustomDialog>
-      <CustomDialog title="Add a Quiz" open={addQuiz} onClose={handleClosePopupAddQuiz}>
+      <CustomDialog
+        title="Add a Quiz"
+        open={addQuiz}
+        onClose={handleClosePopupAddQuiz}
+      >
         <PopupAddQuiz closePopupCreation={handleClosePopupAddQuiz} />
       </CustomDialog>
     </Grid2>

@@ -1,46 +1,46 @@
 export enum ErrorFieldCreateCard {
-  QUESTION = 'Question is obligatory',
-  RESPONSE = 'Response is obligatory'
+  QUESTION = "Question is obligatory",
+  RESPONSE = "Response is obligatory",
 }
 
 export enum Categories {
-    FIRST, 
-    SECOND, 
-    THIRD, 
-    FOURTH, 
-    FIFTH, 
-    SIXTH, 
-    SEVENTH, 
-    DONE
+  FIRST,
+  SECOND,
+  THIRD,
+  FOURTH,
+  FIFTH,
+  SIXTH,
+  SEVENTH,
+  DONE,
 }
 
 export const champs = [
   {
-    id: 'question',
-    name: 'Question',
+    id: "question",
+    name: "Question",
     required: true,
     errorMessage: ErrorFieldCreateCard.QUESTION,
-    changable: true
+    changable: true,
   },
   {
-    id: 'response',
-    name: 'Response',
+    id: "response",
+    name: "Response",
     required: true,
     errorMessage: ErrorFieldCreateCard.RESPONSE,
-    changable: true
+    changable: true,
   },
   {
-    id: 'category',
-    name: 'Category',
+    id: "category",
+    name: "Category",
     required: true,
     errorMessage: null,
-    changable: false
+    changable: false,
   },
   {
-    id: 'tag',
-    name: 'Tag',
+    id: "tag",
+    name: "Tag",
     required: false,
     errorMessage: null,
-    changable: true
-  }
+    changable: true,
+  },
 ];
