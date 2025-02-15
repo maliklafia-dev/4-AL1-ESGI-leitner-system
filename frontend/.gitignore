@@ -1,6 +1,4 @@
-# Node modules
+# Dependencies
 node_modules/
-
-# Dépendances ESLint & Prettier
-.eslintcache
-.prettierignore
+package-lock.json
+.next/
