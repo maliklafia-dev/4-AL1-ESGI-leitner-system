@@ -74,6 +74,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import CardController from "../adapters/primary/CardController.js";
@@ -87,6 +88,8 @@ console.log("Starting server...");
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
 const PORT = process.env.PORT || 8080;
 
 const swaggerOptions = {
@@ -108,6 +111,15 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use(
+    cors({
+      origin: "http://localhost:3000",
+      methods: "GET,POST,PUT,DELETE,PATCH",
+      allowedHeaders: "Content-Type,Authorization",
+    })
+  );
+
 // Database connection
 const connectDB = async () => {
     try {

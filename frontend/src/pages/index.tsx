@@ -4,10 +4,12 @@ import CustomDialog from "./components/CustomDialog";
 import PopupAddQuiz from "./components/PopupAddQuiz";
 import PopupStartGame from "./components/PopupStartGame";
 import style from "../pages/styles/home.module.css";
+import { useRouter } from "next/router";
 
 export default function HomePage() {
+  const router = useRouter();
   const [openQuiz, setOpenQuiz] = useState(false);
-  const [addQuiz, setAddQuiz] = useState(false);
+  const [addCard, setAddCard] = useState(false);
 
   const handlePopupOpenQuiz = () => {
     setOpenQuiz(true);
@@ -17,13 +19,17 @@ export default function HomePage() {
     setOpenQuiz(false);
   };
 
-  const handleOpenPopupAddQuiz = () => {
-    setAddQuiz(true);
+  const handleOpenPopupAddCard = () => {
+    setAddCard(true);
   };
 
-  const handleClosePopupAddQuiz = () => {
-    setAddQuiz(false);
+  const handleClosePopupAddCard = () => {
+    setAddCard(false);
   };
+
+  // const handleSeeCards = () => {
+  //   setAddCard(false);
+  // };
 
   return (
     <Grid2 className={style.styleContainer}>
@@ -35,8 +41,11 @@ export default function HomePage() {
         <Button className={style.styleButton} onClick={handlePopupOpenQuiz}>
           Play
         </Button>
-        <Button className={style.styleButton} onClick={handleOpenPopupAddQuiz}>
-          Add a Quiz
+        <Button className={style.styleButton} onClick={handleOpenPopupAddCard}>
+          Add a Card
+        </Button>
+        <Button className={style.styleButton} onClick={() => router.push("/cards")}>
+          See all Cards
         </Button>
       </Box>
       <CustomDialog
@@ -46,10 +55,10 @@ export default function HomePage() {
         children={<PopupStartGame />}
       />
       <CustomDialog
-        title="Add a Quiz"
-        open={addQuiz}
-        onClose={handleClosePopupAddQuiz}
-        children={<PopupAddQuiz closePopupCreation={handleClosePopupAddQuiz} />}
+        title="Add a Card"
+        open={addCard}
+        onClose={handleClosePopupAddCard}
+        children={<PopupAddQuiz closePopupCreation={handleClosePopupAddCard} />}
       />
     </Grid2>
   );
