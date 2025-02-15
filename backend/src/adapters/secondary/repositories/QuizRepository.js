@@ -52,6 +52,18 @@ class QuizRepository extends QuizRepositoryPort {
     const result = await this.collection.deleteOne({ _id: id });
     return result.deletedCount > 0;
   }
+
+  async hasTakenQuizToday(userId, date) {
+    const startOfDay = new Date(date).setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date).setHours(23, 59, 59, 999);
+
+    const quiz = await this.collection.findOne({
+      userId: userId,
+      createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) }
+    });
+
+    return quiz !== null;
+  }
 }
 
 export default QuizRepository;

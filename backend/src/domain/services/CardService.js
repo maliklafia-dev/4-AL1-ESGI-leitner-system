@@ -2,9 +2,9 @@ import CardServicePort from '../ports/primary/CardServicePort.js';
 import Card from '../models/Card.js';
 
 class CardService extends CardServicePort {
-    constructor(cardRepository) {
+    constructor(cardRepositoryPort) {
         super();
-        this.cardRepository = cardRepository;
+        this.cardRepository = cardRepositoryPort;
     }
    
 
@@ -49,16 +49,55 @@ class CardService extends CardServicePort {
         return this.cardRepository.save(updatedCard);
     }
 
-    async answerCardCorrectly(cardId) {
+    async answerCard(cardId, isValid, userAnswer, forceValidation = false) {
         const card = await this.getCardById(cardId);
-        card.answerCorrectly();
-        return this.cardRepository.save(card);
+
+        if (!card) {
+            throw new Error('Card not found');
+        }
+
+        let correctAnswer = card.answer;
+        let result = { correctAnswer, userAnswer: userAnswer ?? "", isValid };
+
+        if (!isValid && !forceValidation) {
+            card.category = 'FIRST';
+        } else {
+            const nextCategory = {
+                FIRST: "SECOND", SECOND: "THIRD", THIRD: "FOURTH",
+                FOURTH: "FIFTH", FIFTH: "SIXTH", SIXTH: "SEVENTH", SEVENTH: "DONE"
+            };
+
+            if (!nextCategory[card.category]) {
+                throw new Error(`Invalid category: ${card.category}`);
+            }
+
+            card.category = nextCategory[card.category] || "DONE";
+        }
+
+        card.lastAnsweredAt = new Date();
+        await this.cardRepository.save(card);
+
+        return result;
     }
 
-    async answerCardIncorrectly(cardId) {
-        const card = await this.getCardById(cardId);
-        card.answerIncorrectly();
-        return this.cardRepository.save(card);
+    async getCardsForQuiz(date) {
+        const allCards = await this.cardRepository.findAll();
+        const targetDate = new Date(date).setHours(0, 0, 0, 0);
+
+        return allCards.filter(card => {
+            if (card.category === "DONE") return false;
+            if (!card.lastAnsweredAt) return true;
+
+            const lastAnswered = new Date(card.lastAnsweredAt).setHours(0, 0, 0, 0);
+            const daysSinceLastAnswer = Math.floor((targetDate - lastAnswered) / (1000 * 60 * 60 * 24));
+
+            const reviewIntervals = {
+                FIRST: 1, SECOND: 2, THIRD: 4, FOURTH: 8,
+                FIFTH: 16, SIXTH: 32, SEVENTH: 64
+            };
+
+            return daysSinceLastAnswer >= reviewIntervals[card.category];
+        });
     }
 }
 

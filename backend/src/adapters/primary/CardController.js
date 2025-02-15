@@ -11,47 +11,59 @@ class CardController {
     this.router.patch("/cards/:cardId/answer", this.answerCard.bind(this));
   }
 
-  getAllCards(req, res) {
+  async getAllCards(req, res) {
     try {
       const tags = req.query.tags ? req.query.tags.split(",") : [];
-      const cards = this.cardService.getAllCards(tags);
+      const cards = await this.cardService.getAllCards(tags);
       res.status(200).json(cards);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 
-  createCard(req, res) {
+
+  async createCard(req, res) {
     try {
-      const newCard = this.cardService.createCard(req.body);
+      const newCard = await this.cardService.createCard(req.body);
       res.status(201).json(newCard);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 
-  getQuizCards(req, res) {
+  async getQuizCards(req, res) {
     try {
       const date = req.query.date ? new Date(req.query.date) : new Date();
-      const cards = this.cardService.getCardsForQuiz(date);
+      const cards = await this.cardService.getCardsForQuiz(date);
       res.status(200).json(cards);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 
-  answerCard(req, res) {
+  async answerCard(req, res) {
     try {
-      const { isValid } = req.body;
+      const { isValid, userAnswer, forceValidation = false } = req.body;
       if (isValid === undefined) {
         return res.status(400).json({ error: "isValid is required" });
       }
-      this.cardService.answerCard(req.params.cardId, isValid);
+
+      await this.cardService.answerCard(
+          req.params.cardId,
+          isValid,
+          userAnswer,
+          forceValidation
+      );
+
       res.status(204).send();
     } catch (error) {
+      if (error.message === "Card not found") {
+        return res.status(404).json({ error: error.message });
+      }
       res.status(400).json({ error: error.message });
     }
   }
+
 }
 
 export default CardController;

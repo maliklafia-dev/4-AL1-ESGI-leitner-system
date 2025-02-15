@@ -14,6 +14,10 @@ class QuizRepositoryPort {
     async delete(id) {
       throw new Error('Method not implemented');
     }
+
+    async hasTakenQuizToday(userId, date) {
+        throw new Error('Method not implemented');
+    }
   }
   
   export default QuizRepositoryPort;

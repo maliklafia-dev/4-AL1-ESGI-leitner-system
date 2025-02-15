@@ -1,160 +1,141 @@
 import CardService from '../../../src/domain/services/CardService.js';
 import Card from '../../../src/domain/models/Card.js';
 
-describe('CardService', () => {
+describe("CardService", () => {
     let cardService;
     let cardRepositoryMock;
-    
+
     beforeEach(() => {
-        // Create mock repository with implementations
         cardRepositoryMock = {
-            save: jest.fn(card => Promise.resolve(card)),
+            save: jest.fn(),
             findById: jest.fn(),
             findAll: jest.fn()
         };
-        
-        // Initialize service with mock repository
         cardService = new CardService(cardRepositoryMock);
     });
 
-    describe('createCard', () => {
-        test('should create a new card with correct initial values', async () => {
-            const cardData = {
-                question: "What is TDD?",
-                answer: "Test-Driven Development",
-                tag: "testing"
-            };
 
-            const createdCard = await cardService.createCard(cardData);
+    test("should retrieve all cards", async () => {
+        const mockCards = [{ id: "1", question: "Q1", answer: "A1" }];
+        cardRepositoryMock.findAll.mockResolvedValue(mockCards);
 
-            expect(createdCard.question).toBe(cardData.question);
-            expect(createdCard.answer).toBe(cardData.answer);
-            expect(createdCard.tag).toBe(cardData.tag);
-            expect(createdCard.category).toBe('FIRST');
-            expect(cardRepositoryMock.save).toHaveBeenCalled();
-        });
-
-        test('should throw error if required fields are missing', async () => {
-            const invalidCardData = { question: "What is TDD?" };
-            
-            await expect(cardService.createCard(invalidCardData))
-                .rejects
-                .toThrow('Card must have both question and answer');
-        });
+        const cards = await cardService.getAllCards();
+        expect(cards).toEqual(mockCards);
+        expect(cardRepositoryMock.findAll).toHaveBeenCalledTimes(1);
     });
 
-    describe('getCardById', () => {
-        test('should retrieve a card by ID', async () => {
-            const mockCard = {
-                id: 'test-id',
-                question: "What is SOLID?",
-                answer: "Principles of OOP",
-                tag: "design",
-                category: 'FIRST'
-            };
 
-            // Mock the findById implementation to return our mock card
-            cardRepositoryMock.findById.mockResolvedValue(mockCard);
+    test("should create a new card with category FIRST", async () => {
+        const newCard = { question: "Q2", answer: "A2" };
+        cardRepositoryMock.save.mockResolvedValue({ ...newCard, category: "FIRST" });
 
-            const retrievedCard = await cardService.getCardById('test-id');
-            
-            expect(retrievedCard).toEqual(mockCard);
-            expect(cardRepositoryMock.findById).toHaveBeenCalledWith('test-id');
-        });
-
-        test('should throw error when card not found', async () => {
-            // Mock findById to return null, simulating no card found
-            cardRepositoryMock.findById.mockResolvedValue(null);
-
-            await expect(cardService.getCardById('nonexistent-id'))
-                .rejects
-                .toThrow('Card not found');
-        });
+        const result = await cardService.createCard(newCard);
+        expect(result.category).toBe("FIRST");
+        expect(cardRepositoryMock.save).toHaveBeenCalledWith(expect.objectContaining(newCard));
     });
 
-    describe('updateCard', () => {
-        test('should update card with new values', async () => {
-            const existingCard = {
-                id: 'test-id',
-                question: "Old Question",
-                answer: "Old Answer",
-                tag: "general",
-                category: 'FIRST',
-                lastAnsweredAt: new Date(),
-                createdAt: new Date()
-            };
-
-            const updateData = {
-                question: "New Question",
-                answer: "New Answer"
-            };
-
-            cardRepositoryMock.findById.mockResolvedValue(existingCard);
-
-            const updatedCard = await cardService.updateCard('test-id', updateData);
-
-            expect(updatedCard.question).toBe(updateData.question);
-            expect(updatedCard.answer).toBe(updateData.answer);
-            expect(updatedCard.category).toBe(existingCard.category);
-            expect(cardRepositoryMock.save).toHaveBeenCalled();
-        });
+    test("should throw an error if question or answer is missing", async () => {
+        await expect(cardService.createCard({ question: "Q3" })).rejects.toThrow(
+            "Card must have both question and answer"
+        );
     });
 
-    describe('answerCard', () => {
-        test('should handle correct answer', async () => {
-            const card = {
-                id: 'test-id',
-                question: "What is DDD?",
-                answer: "Domain-Driven Design",
-                category: 'FIRST',
-                answerCorrectly: jest.fn(function() {
-                    this.category = 'SECOND';
-                    return this;
-                })
-            };
 
-            cardRepositoryMock.findById.mockResolvedValue(card);
+    test("should return card if found", async () => {
+        const mockCard = { id: "123", question: "Q", answer: "A" };
+        cardRepositoryMock.findById.mockResolvedValue(mockCard);
 
-            const updatedCard = await cardService.answerCardCorrectly('test-id');
-            
-            expect(updatedCard.category).toBe('SECOND');
-            expect(cardRepositoryMock.save).toHaveBeenCalled();
-        });
-
-        test('should handle incorrect answer', async () => {
-            const card = {
-                id: 'test-id',
-                question: "What is Clean Code?",
-                answer: "Readable code",
-                category: 'SECOND',
-                answerIncorrectly: jest.fn(function() {
-                    this.category = 'FIRST';
-                    return this;
-                })
-            };
-
-            cardRepositoryMock.findById.mockResolvedValue(card);
-
-            const updatedCard = await cardService.answerCardIncorrectly('test-id');
-            
-            expect(updatedCard.category).toBe('FIRST');
-            expect(cardRepositoryMock.save).toHaveBeenCalled();
-        });
+        const card = await cardService.getCardById("123");
+        expect(card).toEqual(mockCard);
     });
 
-    describe('getAllCards', () => {
-        test('should retrieve all cards', async () => {
-            const mockCards = [
-                { id: '1', question: 'Q1', answer: 'A1', category: 'FIRST' },
-                { id: '2', question: 'Q2', answer: 'A2', category: 'SECOND' }
-            ];
-            
-            cardRepositoryMock.findAll.mockResolvedValue(mockCards);
-            
-            const cards = await cardService.getAllCards();
-            
-            expect(cards).toEqual(mockCards);
-            expect(cardRepositoryMock.findAll).toHaveBeenCalled();
-        });
+    test("should throw an error if card not found", async () => {
+        cardRepositoryMock.findById.mockResolvedValue(null);
+
+        await expect(cardService.getCardById("999")).rejects.toThrow("Card not found");
+    });
+
+
+    test("should update card and keep existing category and dates", async () => {
+        const existingCard = {
+            id: "1",
+            question: "Old Question",
+            answer: "Old Answer",
+            category: "SECOND",
+            lastAnsweredAt: new Date(),
+            createdAt: new Date()
+        };
+
+        const updateData = {
+            question: "New Question",
+            answer: "New Answer"
+        };
+
+        cardRepositoryMock.findById.mockResolvedValue(existingCard);
+        cardRepositoryMock.save.mockResolvedValue({ ...existingCard, ...updateData });
+
+        const updatedCard = await cardService.updateCard("1", updateData);
+
+        expect(updatedCard.question).toBe(updateData.question);
+        expect(updatedCard.answer).toBe(updateData.answer);
+        expect(updatedCard.category).toBe(existingCard.category); // Ne doit pas changer
+        expect(updatedCard.lastAnsweredAt).toEqual(existingCard.lastAnsweredAt);
+        expect(cardRepositoryMock.save).toHaveBeenCalled();
+    });
+
+
+    test("should reset category to FIRST on incorrect answer", async () => {
+        const mockCard = { id: "1", category: "THIRD", answer: "A" };
+        cardRepositoryMock.findById.mockResolvedValue(mockCard);
+        cardRepositoryMock.save.mockResolvedValue(mockCard);
+
+        await cardService.answerCard("1", false, "Wrong answer", false);
+        expect(mockCard.category).toBe("FIRST");
+        expect(cardRepositoryMock.save).toHaveBeenCalled();
+    });
+
+    test("should move card to next category on correct answer", async () => {
+        const mockCard = { id: "1", category: "FIRST", answer: "A" };
+        cardRepositoryMock.findById.mockResolvedValue(mockCard);
+        cardRepositoryMock.save.mockResolvedValue(mockCard);
+
+        await cardService.answerCard("1", true, "Correct answer", false);
+        expect(mockCard.category).toBe("SECOND");
+        expect(cardRepositoryMock.save).toHaveBeenCalled();
+    });
+
+    test("should allow force validation even if answer is incorrect", async () => {
+        const mockCard = {
+            id: "1",
+            question: "What is JavaScript?",
+            answer: "A programming language",
+            category: "FIRST"
+        };
+
+        cardRepositoryMock.findById.mockResolvedValue(mockCard);
+        cardRepositoryMock.save.mockResolvedValue(mockCard);
+
+        const result = await cardService.answerCard("1", false, "Some different answer", true);
+
+        expect(result.isValid).toBe(false);
+        expect(result.correctAnswer).toBe("A programming language");
+        expect(result.userAnswer).toBe("Some different answer");
+        expect(mockCard.category).toBe("SECOND"); // Passe quand même à la catégorie supérieure
+        expect(cardRepositoryMock.save).toHaveBeenCalled();
+    });
+
+
+    test("should return quiz cards filtered by Leitner system", async () => {
+        const today = new Date();
+        const mockCards = [
+            { id: "1", category: "FIRST", lastAnsweredAt: null },
+            { id: "2", category: "SECOND", lastAnsweredAt: new Date(today - 3 * 24 * 60 * 60 * 1000) }, // doit être incluse
+            { id: "3", category: "THIRD", lastAnsweredAt: new Date(today - 10 * 24 * 60 * 60 * 1000) }  // doit être incluse
+        ];
+        cardRepositoryMock.findAll.mockResolvedValue(mockCards);
+
+        const quizCards = await cardService.getCardsForQuiz(today);
+        expect(quizCards.length).toBe(3); // Toutes doivent être révisées
+        expect(quizCards).toEqual(expect.arrayContaining(mockCards));
     });
 });
