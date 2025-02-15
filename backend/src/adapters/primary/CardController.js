@@ -193,7 +193,7 @@ class CardController {
     try {
       if (!req.body || !req.body.question || !req.body.answer) {
         return res.status(400).json({
-          error: "Missing required fields: question and answer are required",
+          error: "Invalid data",
         });
       }
       const newCard = await this.cardService.createCard(req.body);
