@@ -86,6 +86,7 @@ dotenv.config();
 console.log("Starting server...");
 
 const app = express();
+app.use(express.json());
 const PORT = process.env.PORT || 8080;
 
 const swaggerOptions = {

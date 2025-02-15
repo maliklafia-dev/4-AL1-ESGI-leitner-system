@@ -1,104 +1,113 @@
-import CardServicePort from '../ports/primary/CardServicePort.js';
-import Card from '../models/Card.js';
+import CardServicePort from "../ports/primary/CardServicePort.js";
+import Card from "../models/Card.js";
 
 class CardService extends CardServicePort {
-    constructor(cardRepositoryPort) {
-        super();
-        this.cardRepository = cardRepositoryPort;
-    }
-   
+  constructor(cardRepositoryPort) {
+    super();
+    this.cardRepository = cardRepositoryPort;
+  }
 
-    async getAllCards(){
-        return await this.cardRepository.findAll();
-    }
-  
-      
-    async createCard(cardData) {
-        if (!cardData.question || !cardData.answer) {
-            throw new Error('Card must have both question and answer');
-        }
+  async getAllCards() {
+    return await this.cardRepository.findAll();
+  }
 
-        const card = new Card({
-            question: cardData.question,
-            answer: cardData.answer,
-            tag: cardData.tag,
-            category: 'FIRST'
-        });
-
-        return this.cardRepository.save(card);
+  async createCard(cardData) {
+    if (!cardData.question || !cardData.answer) {
+      throw new Error("Card must have both question and answer");
     }
 
+    const card = new Card({
+      question: cardData.question,
+      answer: cardData.answer,
+      tag: cardData.tag,
+      category: "FIRST",
+    });
 
-    async getCardById(cardId) {
-        const card = await this.cardRepository.findById(cardId);
-        if (!card) {
-            throw new Error('Card not found');
-        }
-        return card;
+    return this.cardRepository.save(card);
+  }
+
+  async getCardById(cardId) {
+    const card = await this.cardRepository.findById(cardId);
+    if (!card) {
+      throw new Error("Card not found");
+    }
+    return card;
+  }
+
+  async updateCard(cardId, updatedData) {
+    const existingCard = await this.getCardById(cardId);
+    const updatedCard = new Card({
+      ...updatedData,
+      id: cardId,
+      category: existingCard.category,
+      lastAnsweredAt: existingCard.lastAnsweredAt,
+      createdAt: existingCard.createdAt,
+    });
+    return this.cardRepository.save(updatedCard);
+  }
+
+  async answerCard(cardId, isValid, userAnswer, forceValidation = false) {
+    const card = await this.getCardById(cardId);
+
+    if (!card) {
+      throw new Error("Card not found");
     }
 
-    async updateCard(cardId, updatedData) {
-        const existingCard = await this.getCardById(cardId);
-        const updatedCard = new Card({
-            ...updatedData,
-            id: cardId,
-            category: existingCard.category,
-            lastAnsweredAt: existingCard.lastAnsweredAt,
-            createdAt: existingCard.createdAt
-        });
-        return this.cardRepository.save(updatedCard);
+    let correctAnswer = card.answer;
+    let result = { correctAnswer, userAnswer: userAnswer ?? "", isValid };
+
+    if (!isValid && !forceValidation) {
+      card.category = "FIRST";
+    } else {
+      const nextCategory = {
+        FIRST: "SECOND",
+        SECOND: "THIRD",
+        THIRD: "FOURTH",
+        FOURTH: "FIFTH",
+        FIFTH: "SIXTH",
+        SIXTH: "SEVENTH",
+        SEVENTH: "DONE",
+      };
+
+      if (!nextCategory[card.category]) {
+        throw new Error(`Invalid category: ${card.category}`);
+      }
+
+      card.category = nextCategory[card.category] || "DONE";
     }
 
-    async answerCard(cardId, isValid, userAnswer, forceValidation = false) {
-        const card = await this.getCardById(cardId);
+    card.lastAnsweredAt = new Date();
+    await this.cardRepository.save(card);
 
-        if (!card) {
-            throw new Error('Card not found');
-        }
+    return result;
+  }
 
-        let correctAnswer = card.answer;
-        let result = { correctAnswer, userAnswer: userAnswer ?? "", isValid };
+  async getCardsForQuiz(date) {
+    const allCards = await this.cardRepository.findAll();
+    const targetDate = new Date(date).setHours(0, 0, 0, 0);
 
-        if (!isValid && !forceValidation) {
-            card.category = 'FIRST';
-        } else {
-            const nextCategory = {
-                FIRST: "SECOND", SECOND: "THIRD", THIRD: "FOURTH",
-                FOURTH: "FIFTH", FIFTH: "SIXTH", SIXTH: "SEVENTH", SEVENTH: "DONE"
-            };
+    return allCards.filter((card) => {
+      if (card.category === "DONE") return false;
+      if (!card.lastAnsweredAt) return true;
 
-            if (!nextCategory[card.category]) {
-                throw new Error(`Invalid category: ${card.category}`);
-            }
+      const lastAnswered = new Date(card.lastAnsweredAt).setHours(0, 0, 0, 0);
+      const daysSinceLastAnswer = Math.floor(
+        (targetDate - lastAnswered) / (1000 * 60 * 60 * 24),
+      );
 
-            card.category = nextCategory[card.category] || "DONE";
-        }
+      const reviewIntervals = {
+        FIRST: 1,
+        SECOND: 2,
+        THIRD: 4,
+        FOURTH: 8,
+        FIFTH: 16,
+        SIXTH: 32,
+        SEVENTH: 64,
+      };
 
-        card.lastAnsweredAt = new Date();
-        await this.cardRepository.save(card);
-
-        return result;
-    }
-
-    async getCardsForQuiz(date) {
-        const allCards = await this.cardRepository.findAll();
-        const targetDate = new Date(date).setHours(0, 0, 0, 0);
-
-        return allCards.filter(card => {
-            if (card.category === "DONE") return false;
-            if (!card.lastAnsweredAt) return true;
-
-            const lastAnswered = new Date(card.lastAnsweredAt).setHours(0, 0, 0, 0);
-            const daysSinceLastAnswer = Math.floor((targetDate - lastAnswered) / (1000 * 60 * 60 * 24));
-
-            const reviewIntervals = {
-                FIRST: 1, SECOND: 2, THIRD: 4, FOURTH: 8,
-                FIFTH: 16, SIXTH: 32, SEVENTH: 64
-            };
-
-            return daysSinceLastAnswer >= reviewIntervals[card.category];
-        });
-    }
+      return daysSinceLastAnswer >= reviewIntervals[card.category];
+    });
+  }
 }
 
 export default CardService;
