@@ -15,6 +15,39 @@ Leitner System est une application de gestion de fiches d'apprentissage basée s
 
 🔹 ✅ API REST conforme à Swagger pour l'intégration backend
 
+---
+
+## 📡 Explication détaillée du fonctionnement du projet  
+
+### 🔹 Principe du système Leitner  
+Le système Leitner est une **méthode de mémorisation** basée sur la répétition espacée :  
+1. L’utilisateur **crée des fiches d’apprentissage** (question / réponse).  
+2. **Chaque fiche commence en catégorie 1**.  
+3. **Chaque jour, il révise ses fiches** selon un système de répétition :  
+   - Si la réponse est **bonne**, la fiche monte en **catégorie supérieure**.  
+   - Si la réponse est **mauvaise**, la fiche **revient en catégorie 1**.  
+4. **Les fiches avancent de manière exponentielle** dans le temps (1 jour, 2 jours, 4 jours, etc.).  
+5. **Une fiche bien apprise (catégorie 7) est retirée** du système.  
+
+### 🔹 Interaction utilisateur  
+1. **Ajout d’une nouvelle fiche**  
+   - L’utilisateur renseigne une **question et une réponse**.  
+   - Il peut ajouter **des tags** pour mieux classifier ses fiches.  
+   - La fiche est enregistrée en **catégorie 1**.  
+
+2. **Lancement du quiz quotidien**  
+   - L’utilisateur voit **une question à la fois**.  
+   - Il saisit sa réponse et la compare à la réponse correcte.  
+   - Si la réponse est **fausse**, la **bonne réponse** est affichée et il peut **forcer la validation**.  
+   - La fiche est **mise à jour dans la base de données**.  
+
+3. **Mise à jour automatique des fiches**  
+   - L’application suit le **planning de répétition** du système Leitner.  
+   - Les fiches correctement répondues **progressent**, les mauvaises reviennent **en catégorie 1**.  
+
+---
+
+
 ## Installation & Configuration
 
 ### 1️⃣ Prérequis
