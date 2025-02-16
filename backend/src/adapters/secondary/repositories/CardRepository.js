@@ -14,7 +14,7 @@ class CardRepository extends CardRepositoryPort {
       question: card.question,
       answer: card.answer,
       tag: card.tag,
-      category: card.category,
+      category:card.category,
       lastAnsweredAt: card.lastAnsweredAt,
       createdAt: card.createdAt,
       updatedAt: card.updatedAt,

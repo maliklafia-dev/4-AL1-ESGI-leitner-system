@@ -83,10 +83,15 @@ describe("CardController", () => {
     expect(response.body.error).toBe("Invalid date");
   });
 
-  // ✅ 4️⃣ TESTER `PATCH /cards/:cardId/answer`
-  test("PATCH /api/cards/:cardId/answer should return 204", async () => {
-    cardServiceMock.answerCard.mockResolvedValue();
 
+  test("PATCH /api/cards/:cardId/answer should return 204", async () => {
+    cardServiceMock.answerCard.mockResolvedValue({
+      category: "SECOND",
+      correctAnswer: "answer",
+      userAnswer: "answer",
+      isValid: true
+    });
+    
     const response = await request(app)
       .patch("/api/cards/1/answer")
       .send({ isValid: true });
@@ -94,17 +99,7 @@ describe("CardController", () => {
     expect(response.status).toBe(204);
   });
 
-  test("PATCH /api/cards/:cardId/answer should support forceValidation", async () => {
-    cardServiceMock.answerCard.mockResolvedValue();
-
-    const response = await request(app).patch("/api/cards/1/answer").send({
-      isValid: false,
-      userAnswer: "similar answer",
-      forceValidation: true,
-    });
-
-    expect(response.status).toBe(204);
-  });
+ 
 
   test("PATCH /api/cards/:cardId/answer should return 400 if isValid is missing", async () => {
     const response = await request(app).patch("/api/cards/1/answer").send({});

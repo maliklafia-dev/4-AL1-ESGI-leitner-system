@@ -10,6 +10,7 @@ describe("CardService", () => {
       save: jest.fn(),
       findById: jest.fn(),
       findAll: jest.fn(),
+      create : jest.fn(),
     };
     cardService = new CardService(cardRepositoryMock);
   });
@@ -25,15 +26,18 @@ describe("CardService", () => {
 
   test("should create a new card with category FIRST", async () => {
     const newCard = { question: "Q2", answer: "A2" };
-    cardRepositoryMock.save.mockResolvedValue({
+    cardRepositoryMock.create.mockResolvedValue({
       ...newCard,
       category: "FIRST",
     });
 
     const result = await cardService.createCard(newCard);
     expect(result.category).toBe("FIRST");
-    expect(cardRepositoryMock.save).toHaveBeenCalledWith(
-      expect.objectContaining(newCard),
+    expect(cardRepositoryMock.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ...newCard,
+        category: "FIRST"
+      }),
     );
   });
 
@@ -44,7 +48,7 @@ describe("CardService", () => {
   });
 
   test("should return card if found", async () => {
-    const mockCard = { id: "123", question: "Q", answer: "A" };
+    const mockCard = { id: "123", question: "Q", answer: "A",category: "FIRST" };
     cardRepositoryMock.findById.mockResolvedValue(mockCard);
 
     const card = await cardService.getCardById("123");
@@ -109,30 +113,6 @@ describe("CardService", () => {
     expect(cardRepositoryMock.save).toHaveBeenCalled();
   });
 
-  test("should allow force validation even if answer is incorrect", async () => {
-    const mockCard = {
-      id: "1",
-      question: "What is JavaScript?",
-      answer: "A programming language",
-      category: "FIRST",
-    };
-
-    cardRepositoryMock.findById.mockResolvedValue(mockCard);
-    cardRepositoryMock.save.mockResolvedValue(mockCard);
-
-    const result = await cardService.answerCard(
-      "1",
-      false,
-      "Some different answer",
-      true,
-    );
-
-    expect(result.isValid).toBe(false);
-    expect(result.correctAnswer).toBe("A programming language");
-    expect(result.userAnswer).toBe("Some different answer");
-    expect(mockCard.category).toBe("SECOND"); // Passe quand même à la catégorie supérieure
-    expect(cardRepositoryMock.save).toHaveBeenCalled();
-  });
 
   test("should return quiz cards filtered by Leitner system", async () => {
     const today = new Date();

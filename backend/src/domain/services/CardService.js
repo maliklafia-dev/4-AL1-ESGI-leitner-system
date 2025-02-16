@@ -17,13 +17,14 @@ class CardService extends CardServicePort {
     }
 
     const card = new Card({
+      category:"FIRST",
       question: cardData.question,
       answer: cardData.answer,
       tag: cardData.tag,
-      category: "FIRST",
+      
     });
 
-    return this.cardRepository.create(card);
+    return  this.cardRepository.create(card);
   }
 
   async getCardById(cardId) {
@@ -46,7 +47,7 @@ class CardService extends CardServicePort {
     return this.cardRepository.save(updatedCard);
   }
 
-  async answerCard(cardId, isValid, userAnswer) {
+  async answerCard(cardId, isValid, userAnswer , forceValidation=false) {
     const card = await this.getCardById(cardId);
 
     if (!card) {
