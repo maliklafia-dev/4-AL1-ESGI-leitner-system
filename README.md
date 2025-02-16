@@ -114,6 +114,6 @@ Pour une documentation interactive de l'API :
 
 ## 🟠Autre
 ```sh
-    make format
-    make clean
+    make format # Formater tous les fichiers
+    make clean # supprimé les modules et reinstaller
 ```
