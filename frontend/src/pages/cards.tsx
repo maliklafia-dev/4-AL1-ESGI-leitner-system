@@ -12,7 +12,7 @@ export default function CardsPage() {
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const response = await fetch("http://localhost:8080/cards");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cards`);
         if (!response.ok) {
           throw new Error("Erreur lors du chargement des cartes");
         }
@@ -42,13 +42,13 @@ export default function CardsPage() {
       <Container maxWidth="md">
         <Box mt={5} textAlign="center">
           <Typography variant="h3" color="primary" gutterBottom>
-            Liste des Cartes
+            List of Cards
           </Typography>
 
           <FormControl sx={{ minWidth: 200, marginRight: 2 }}>
-            <InputLabel>Filtrer par Tag</InputLabel>
+            <InputLabel>Filter by Tag</InputLabel>
             <Select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)}>
-              <MenuItem value="">Tous</MenuItem>
+              <MenuItem value="">All</MenuItem>
               {tags.map((tag) => (
                 <MenuItem key={tag} value={tag}>
                   {tag}
@@ -58,9 +58,9 @@ export default function CardsPage() {
           </FormControl>
 
           <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>Filtrer par Catégorie</InputLabel>
+            <InputLabel>Filter by Category</InputLabel>
             <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-              <MenuItem value="">Toutes</MenuItem>
+              <MenuItem value="">All</MenuItem>
               {categories.map((category) => (
                 <MenuItem key={category} value={category}>
                   {category}

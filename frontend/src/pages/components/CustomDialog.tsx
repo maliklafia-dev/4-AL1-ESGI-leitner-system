@@ -17,7 +17,7 @@ const StyledDialogTitle = styled(DialogTitle)(() => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  position: "relative",
+  position: "relative"
 }));
 
 function CustomDialog({ open, onClose, title, children }: CustomDialogProps) {
@@ -29,7 +29,6 @@ function CustomDialog({ open, onClose, title, children }: CustomDialogProps) {
       sx={{
         "& .MuiDialog-container": {
           "& .MuiPaper-root": {
-            width: "100%",
             maxHeight: "auto",
           },
         },

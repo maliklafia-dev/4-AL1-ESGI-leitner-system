@@ -1,10 +1,10 @@
 import { Box, Button, Grid2, Typography, Stack } from "@mui/material";
 import { useState } from "react";
 import CustomDialog from "./components/CustomDialog";
-import PopupAddQuiz from "./components/PopupAddQuiz";
-import PopupStartGame from "./components/PopupStartGame";
+import PopupAddCard from "./components/PopupAddCard";
 import { useRouter } from "next/router";
 import styles from './styles/home.module.css';
+import Quizz from "./Quizz";
 
 export default function HomePage() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function HomePage() {
             sx={{ background: '#367917cc' }}
             onClick={() => setOpenQuiz(true)}
           >
-            🎯 Lancer une Partie
+            🎯 Start Quizz
           </Button>
 
           <Button
@@ -43,7 +43,7 @@ export default function HomePage() {
             sx={{ background: '#265a91c4' }}
             onClick={() => setAddCard(true)}
           >
-            ➕ Ajouter une Carte
+            ➕ Add New Card
           </Button>
 
           <Button
@@ -52,17 +52,17 @@ export default function HomePage() {
             sx={{ background: '#8bbbc6' }}
             onClick={() => router.push("/cards")}
           >
-            📖 Voir Toutes les Cartes
+            📖 See All Cards
           </Button>
         </Stack>
       </Box>
 
-      <CustomDialog title="Lancer une Partie" open={openQuiz} onClose={() => setOpenQuiz(false)}>
-        <PopupStartGame />
+      <CustomDialog title="🎯 Quiz of the day" open={openQuiz} onClose={() => setOpenQuiz(false)}>
+        <Quizz />
       </CustomDialog>
 
-      <CustomDialog title="Ajouter une Carte" open={addCard} onClose={() => setAddCard(false)}>
-        <PopupAddQuiz closePopupCreation={() => setAddCard(false)} />
+      <CustomDialog title="Add New Card" open={addCard} onClose={() => setAddCard(false)}>
+        <PopupAddCard closePopupCreation={() => setAddCard(false)} />
       </CustomDialog>
     </Grid2>
   );

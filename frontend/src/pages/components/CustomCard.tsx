@@ -22,7 +22,7 @@ export default function FlipCard({ question, answer, tag, category }) {
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   Tag: {tag}
                 </Typography>
-                <Typography variant="body2">Catégorie: {category}</Typography>
+                <Typography variant="body2">Category: {category}</Typography>
               </CardContent>
             </Card>
   

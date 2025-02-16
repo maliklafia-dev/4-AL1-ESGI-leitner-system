@@ -201,17 +201,12 @@ class CardController {
 
   async answerCard(req, res) {
     try {
-      const { isValid, userAnswer, forceValidation = false } = req.body;
+      const { isValid, userAnswer } = req.body;
       if (isValid === undefined) {
         return res.status(400).json({ error: "isValid is required" });
       }
 
-      await this.cardService.answerCard(
-        req.params.cardId,
-        isValid,
-        userAnswer,
-        forceValidation,
-      );
+      await this.cardService.answerCard(req.params.cardId, isValid, userAnswer);
 
       res.status(204).send();
     } catch (error) {

@@ -23,7 +23,7 @@ class CardService extends CardServicePort {
       category: "FIRST",
     });
 
-    return this.cardRepository.save(card);
+    return this.cardRepository.create(card);
   }
 
   async getCardById(cardId) {
@@ -46,7 +46,7 @@ class CardService extends CardServicePort {
     return this.cardRepository.save(updatedCard);
   }
 
-  async answerCard(cardId, isValid, userAnswer, forceValidation = false) {
+  async answerCard(cardId, isValid, userAnswer) {
     const card = await this.getCardById(cardId);
 
     if (!card) {
@@ -56,7 +56,7 @@ class CardService extends CardServicePort {
     let correctAnswer = card.answer;
     let result = { correctAnswer, userAnswer: userAnswer ?? "", isValid };
 
-    if (!isValid && !forceValidation) {
+    if (!isValid) {
       card.category = "FIRST";
     } else {
       const nextCategory = {
@@ -85,16 +85,17 @@ class CardService extends CardServicePort {
   async getCardsForQuiz(date) {
     const allCards = await this.cardRepository.findAll();
     const targetDate = new Date(date).setHours(0, 0, 0, 0);
-
-    return allCards.filter((card) => {
-      if (card.category === "DONE") return false;
-      if (!card.lastAnsweredAt) return true;
-
+    const filteredCards = allCards.filter((card) => {
+      if (card.category === "DONE") {
+        return false;
+      }
+      if (!card.lastAnsweredAt) {
+        return true;
+      }
       const lastAnswered = new Date(card.lastAnsweredAt).setHours(0, 0, 0, 0);
       const daysSinceLastAnswer = Math.floor(
         (targetDate - lastAnswered) / (1000 * 60 * 60 * 24),
       );
-
       const reviewIntervals = {
         FIRST: 1,
         SECOND: 2,
@@ -104,9 +105,11 @@ class CardService extends CardServicePort {
         SIXTH: 32,
         SEVENTH: 64,
       };
-
-      return daysSinceLastAnswer >= reviewIntervals[card.category];
+      const requiredDays = reviewIntervals[card.category];
+      const isDue = daysSinceLastAnswer >= requiredDays;
+      return isDue;
     });
+    return filteredCards;
   }
 }
 
