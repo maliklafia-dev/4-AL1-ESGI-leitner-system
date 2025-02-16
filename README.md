@@ -52,6 +52,7 @@ Le système Leitner est une **méthode de mémorisation** basée sur la répéti
 
 ### 1️⃣ Prérequis
 - **Node.js**
+- **Next.js**
 - **MongoDB**
 - **npm** ou **yarn**
 
