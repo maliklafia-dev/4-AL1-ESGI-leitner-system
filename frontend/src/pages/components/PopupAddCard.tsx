@@ -21,7 +21,7 @@ export default function PopupAddCard({ closePopupCreation }) {
 
   const handleInputChange = (
     id: string,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { value } = event.target;
     setInputs((prevInputs) =>
@@ -46,14 +46,14 @@ export default function PopupAddCard({ closePopupCreation }) {
         },
       );
 
-      if (!response.ok) throw new Error("Erreur lors de l'ajout de la carte");
+      if (!response.ok) throw new Error("Error occurred add card");
 
-      setSuccessMessage("Carte ajoutée avec succès !");
+      setSuccessMessage("Card added successfully !");
       setTimeout(() => {
         closePopupCreation();
       }, 1500);
     } catch (error) {
-      console.error("Erreur:", error);
+      setSuccessMessage("Error");
     }
   };
 
@@ -116,7 +116,11 @@ export default function PopupAddCard({ closePopupCreation }) {
         autoHideDuration={3000}
         onClose={() => setSuccessMessage("")}
       >
-        <Alert severity="success">{successMessage}</Alert>
+        <Alert
+          severity={successMessage.includes("Error") ? "error" : "success"}
+        >
+          {successMessage}
+        </Alert>
       </Snackbar>
     </Box>
   );

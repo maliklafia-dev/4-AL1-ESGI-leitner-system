@@ -10,7 +10,7 @@ import {
   InputLabel,
 } from "@mui/material";
 import FlipCard from "./components/CustomCard";
-import { createCard } from "../api/cardApi";
+import { fetchCards } from "../api/cardApi";
 
 export default function CardsPage() {
   const categories = [
@@ -29,8 +29,8 @@ export default function CardsPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    const fetchCards = async () => {
-      const data = await createCard();
+    const fetchAllCards = async () => {
+      const data = await fetchCards();
       setCards(data);
       const extractedTags = data
         .map((card) => card.tag)
@@ -38,7 +38,7 @@ export default function CardsPage() {
       setTags(extractedTags);
     };
 
-    fetchCards();
+    fetchAllCards();
   }, []);
 
   const filteredCards = cards.filter(
@@ -103,7 +103,7 @@ export default function CardsPage() {
             textAlign="center"
             sx={{ mt: 4, width: "100%" }}
           >
-            Aucune carte trouvée.
+            No cards found.
           </Typography>
         )}
       </Grid2>

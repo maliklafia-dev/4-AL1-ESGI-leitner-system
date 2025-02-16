@@ -6,7 +6,7 @@ export const fetchQuizCards = async () => {
     if (!response.ok) throw new Error("Error fetching quiz cards");
     return await response.json();
   } catch (error) {
-    console.error("API Error (fetchQuizCards):", error);
+    // throw new Error("API Error (fetchQuizCards):", error);
     return [];
   }
 };
@@ -23,21 +23,21 @@ export const answerCard = async (cardId: string, isValid: boolean) => {
 
     return response;
   } catch (error) {
-    console.error("API Error (answerCard):", error);
+    throw new Error("API Error (answerCard):", error);
   }
 };
 
-export const createCard = async () => {
+export const fetchCards = async () => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/cards`,
     );
     if (!response.ok) {
-      throw new Error("Erreur lors du chargement des cartes");
+      throw new Error("Error occurred loading cards");
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Erreur API:", error);
+    throw new Error("Erreur API:", error);
   }
 };
