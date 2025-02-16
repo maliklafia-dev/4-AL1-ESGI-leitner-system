@@ -46,6 +46,7 @@ function CustomDialog({ open, onClose, title, children }: CustomDialogProps) {
             top: "50%",
             transform: "translateY(-50%)",
           }}
+          data-testid="close-popup-button"
         >
           <GridCloseIcon />
         </IconButton>

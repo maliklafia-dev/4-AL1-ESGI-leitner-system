@@ -21,7 +21,7 @@ export default function PopupAddCard({ closePopupCreation }) {
 
   const handleInputChange = (
     id: string,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { value } = event.target;
     setInputs((prevInputs) =>
@@ -87,6 +87,9 @@ export default function PopupAddCard({ closePopupCreation }) {
               variant="outlined"
               disabled={!input.changable}
               sx={{ background: input.changable ? "white" : "#f5f5f5" }}
+              inputRef={(el) =>
+                el && el.setAttribute("data-testid", `input-${input.id}`)
+              }
             />
           </Grid2>
         </Grid2>
@@ -106,6 +109,7 @@ export default function PopupAddCard({ closePopupCreation }) {
             width: "30%",
             height: "40px",
           }}
+          data-testid="submit-button"
         >
           Add
         </Button>

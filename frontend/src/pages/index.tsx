@@ -56,8 +56,9 @@ export default function HomePage() {
             variant="outlined"
             sx={{ background: "#8bbbc6" }}
             onClick={() => router.push("/Cards")}
+            data-testid="see-all-cards-button"
           >
-            📖 See All Cards
+            📖 See All Cardscls
           </Button>
         </Stack>
       </Box>
