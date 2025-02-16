@@ -206,7 +206,15 @@ class CardController {
         return res.status(400).json({ error: "isValid is required" });
       }
 
-      await this.cardService.answerCard(req.params.cardId, isValid, userAnswer);
+      const card = await this.cardService.answerCard(
+        req.params.cardId,
+        isValid,
+        userAnswer,
+      );
+
+      if (!card) {
+        return res.status(404).json({ error: "Card not found" });
+      }
 
       res.status(204).send();
     } catch (error) {

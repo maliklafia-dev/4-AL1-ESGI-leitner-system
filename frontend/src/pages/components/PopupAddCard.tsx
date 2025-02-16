@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { Box, Button, Grid2, TextField, Typography, Snackbar, Alert } from "@mui/material";
+import { champs } from "../../utils/inputsCreateCard";
 
 export default function PopupAddCard({ closePopupCreation }) {
-  const champs = [
-    { id: "question", name: "Question", required: true, changable: true },
-    { id: "answer", name: "Response", required: true, changable: true },
-    { id: "tag", name: "Tag", required: false, changable: true, value: null },
-    { id: "category", name: "Category", required: true, changable: false, value: "FIRST" },
-  ];
-
   const [successMessage, setSuccessMessage] = useState("");
   const [inputs, setInputs] = useState(
     champs.map((input) => ({
@@ -61,10 +55,10 @@ export default function PopupAddCard({ closePopupCreation }) {
           alignItems="center"
           sx={{ mb: 2, marginLeft: 5 }}
         >
-          <Grid2 size={2}>
+          <Grid2 size={3}>
             <Typography sx={{ fontWeight: 510 }}>{input.name} {input.required && " *"}</Typography>
           </Grid2>
-          <Grid2 size={9}>
+          <Grid2 size={8}>
             <TextField
               fullWidth
               onChange={(e) => handleInputChange(input.id, e)}

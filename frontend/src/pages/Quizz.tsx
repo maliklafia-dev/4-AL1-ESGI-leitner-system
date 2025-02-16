@@ -3,6 +3,7 @@ import {
   Container, Box, Typography, Button, Card, CardContent, Stack, 
   LinearProgress, Snackbar, Alert, TextField 
 } from "@mui/material";
+import { answerCard, fetchQuizCards } from "../api/cardApi";
 
 export default function Quizz() {
   const [cards, setCards] = useState([]);
@@ -13,43 +14,27 @@ export default function Quizz() {
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [canForceValidation, setCanForceValidation] = useState(false);
 
-  const progress = ((currentIndex + 1) / cards.length) * 100;
-  const currentCard = cards[currentIndex];
+  const isQuizFinished = currentIndex >= cards.length;
+  const progress = isQuizFinished ? 100 : ((currentIndex + 1) / cards.length) * 100;
+  const currentCard = !isQuizFinished ? cards[currentIndex] : null;
 
   useEffect(() => {
-    const fetchQuizCards = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cards/quizz`);
-        if (!res.ok) throw new Error("Error fetching cards");
-        const data = await res.json();
-        setCards(data);
-      } catch (error) {
-        console.error("API Error:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    const loadCards = async () => {
+      setIsLoading(true);
+      const data = await fetchQuizCards();
+      setCards(data);
+      setIsLoading(false);
     };
 
-    fetchQuizCards();
+    loadCards();
   }, []);
 
   const handleChangeResponse = (event: React.ChangeEvent<HTMLInputElement>) => {
     setResponse(event.target.value);
   };
 
-  const submitAnswer = async (id: number, isValid: boolean) => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cards/${id}/answer`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isValid }),
-      });
-
-      if (!res.ok){
-        console.log(res);
-        throw new Error("Error submitting answer");
-      } 
-
+  const submitAnswer = async (id: string, isValid: boolean) => {
+    await answerCard(id, isValid);
       setTimeout(() => {
         setCurrentIndex((prevIndex) => prevIndex + 1);
         setResponse("");
@@ -57,30 +42,28 @@ export default function Quizz() {
         setCanForceValidation(false);
         setSuccessMessage("");
       }, 1000);
-
-    } catch (error) {
-      console.error("API Error:", error);
-    }
   };
 
   const handleAnswer = async () => {
     if (!currentCard) return;
 
     if (response.trim().toLowerCase() === currentCard.answer.trim().toLowerCase()) {
-      setSuccessMessage("✅ Correct answer! 🎉");
+      setSuccessMessage("✅ Correct answer! ");
       submitAnswer(currentCard.id, true);
     } else {
-      setSuccessMessage("❌ Wrong answer 😕");
+      setSuccessMessage("❌ Wrong answer ");
       setCorrectAnswer(currentCard.answer);
       setCanForceValidation(true);
     }
+
+    
   };
 
   return (
     <Container maxWidth="sm">
       {isLoading ? (
         <Typography textAlign="center">Loading quiz cards...</Typography>
-      ) : cards.length === 0 ? (
+      ) : isQuizFinished ? (
         <Typography textAlign="center">No cards to review today.</Typography>
       ) : (
         <Box textAlign="center" m={3}>

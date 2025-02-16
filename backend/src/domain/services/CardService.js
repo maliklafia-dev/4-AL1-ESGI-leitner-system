@@ -77,9 +77,7 @@ class CardService extends CardServicePort {
     }
 
     card.lastAnsweredAt = new Date();
-    await this.cardRepository.save(card);
-
-    return result;
+    return await this.cardRepository.save(card);
   }
 
   async getCardsForQuiz(date) {

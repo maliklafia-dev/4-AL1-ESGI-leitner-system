@@ -50,7 +50,7 @@ export default function HomePage() {
             className={styles.styleButton}
             variant="outlined"
             sx={{ background: '#8bbbc6' }}
-            onClick={() => router.push("/cards")}
+            onClick={() => router.push("/Cards")}
           >
             📖 See All Cards
           </Button>

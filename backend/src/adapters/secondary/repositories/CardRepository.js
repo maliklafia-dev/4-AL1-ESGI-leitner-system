@@ -26,30 +26,32 @@ class CardRepository extends CardRepositoryPort {
 
   async save(card) {
     const cardData = {
-      _id: card.id,
       question: card.question,
       answer: card.answer,
       tag: card.tag,
       category: card.category,
       lastAnsweredAt: card.lastAnsweredAt,
-      createdAt: card.createdAt,
       updatedAt: new Date(),
     };
 
-    await this.collection.updateOne(
-      { _id: cardData._id },
+    const result = await this.collection.updateOne(
+      { _id: new ObjectId(card.id) },
       { $set: cardData },
-      { upsert: true },
     );
 
-    return card;
+    if (result.matchedCount === 0) {
+      console.error("⚠️ No card found to update with ID:", card.id);
+      throw new Error("Card not found");
+    }
+
+    return cardData;
   }
 
   async findById(id) {
     const objectId = new ObjectId(id.trim());
     const cardData = await this.collection.findOne({ _id: objectId });
     if (!cardData) {
-      console.log("⚠️ No card found in DB with this ID:", objectId);
+      console.log("No card found in DB with this ID:", objectId);
       return null;
     }
 

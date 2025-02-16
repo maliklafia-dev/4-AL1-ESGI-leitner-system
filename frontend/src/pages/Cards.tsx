@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Container, Typography, Box, Grid2, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import FlipCard from "./components/CustomCard";
+import { createCard } from "../api/cardApi";
 
 export default function CardsPage() {
   const categories = ["FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "DONE"]; 
@@ -11,22 +12,12 @@ export default function CardsPage() {
 
   useEffect(() => {
     const fetchCards = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cards`);
-        if (!response.ok) {
-          throw new Error("Erreur lors du chargement des cartes");
-        }
-        const data = await response.json();
+        const data = await createCard();
         setCards(data);
-
         const extractedTags = data
           .map((card) => card.tag) 
-          .filter((tag, index, self) => self.indexOf(tag) === index); 
-          
+          .filter((tag, index, self) => self.indexOf(tag) === index);   
         setTags(extractedTags);
-      } catch (error) {
-        console.error("Erreur API:", error);
-      }
     };
 
     fetchCards();
