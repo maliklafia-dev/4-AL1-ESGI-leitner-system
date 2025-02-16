@@ -1,6 +1,7 @@
 import GridCloseIcon from "@mui/icons-material/Close";
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { styled } from "@mui/system";
+import React from "react";
 
 export interface CustomDialogProps {
   open: boolean;
@@ -17,7 +18,7 @@ const StyledDialogTitle = styled(DialogTitle)(() => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  position: "relative"
+  position: "relative",
 }));
 
 function CustomDialog({ open, onClose, title, children }: CustomDialogProps) {

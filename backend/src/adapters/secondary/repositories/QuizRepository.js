@@ -1,21 +1,24 @@
-import QuizRepositoryPort from '../../../domain/ports/secondary/QuizRepositoryPort.js';
-import Quiz from '../../../domain/models/Quiz.js';
+import QuizRepositoryPort from "../../../domain/ports/secondary/QuizRepositoryPort.js";
+import Quiz from "../../../domain/models/Quiz.js";
 
 class QuizRepository extends QuizRepositoryPort {
   constructor(mongoClient) {
     super();
-    this.collection = mongoClient.db.collection('quizes');
+    this.collection = mongoClient.db.collection("quizes");
   }
 
   async findAll() {
     const quizesData = await this.collection.find().toArray();
-    return quizesData.map((data) => new Quiz({
-      id: data._id,
-      name: data.name,
-      questions: data.questions,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt
-    }));
+    return quizesData.map(
+      (data) =>
+        new Quiz({
+          id: data._id,
+          name: data.name,
+          questions: data.questions,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        }),
+    );
   }
 
   async findById(id) {
@@ -26,7 +29,7 @@ class QuizRepository extends QuizRepositoryPort {
       name: quizData.name,
       questions: quizData.questions,
       createdAt: quizData.createdAt,
-      updatedAt: quizData.updatedAt
+      updatedAt: quizData.updatedAt,
     });
   }
 
@@ -36,13 +39,13 @@ class QuizRepository extends QuizRepositoryPort {
       name: quiz.name,
       questions: quiz.questions,
       createdAt: quiz.createdAt,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     await this.collection.updateOne(
       { _id: quizData._id },
       { $set: quizData },
-      { upsert: true }
+      { upsert: true },
     );
 
     return quiz;
@@ -59,7 +62,7 @@ class QuizRepository extends QuizRepositoryPort {
 
     const quiz = await this.collection.findOne({
       userId: userId,
-      createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) }
+      createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) },
     });
 
     return quiz !== null;

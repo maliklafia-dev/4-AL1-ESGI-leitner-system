@@ -3,7 +3,7 @@ import { useState } from "react";
 import CustomDialog from "./components/CustomDialog";
 import PopupAddCard from "./components/PopupAddCard";
 import { useRouter } from "next/router";
-import styles from './styles/home.module.css';
+import styles from "./styles/home.module.css";
 import Quizz from "./Quizz";
 
 export default function HomePage() {
@@ -27,11 +27,16 @@ export default function HomePage() {
           Learn effectively with flashcards
         </Typography>
 
-        <Stack spacing={2} direction="column" alignItems="center" sx={{ mt: 3 }}>
+        <Stack
+          spacing={2}
+          direction="column"
+          alignItems="center"
+          sx={{ mt: 3 }}
+        >
           <Button
             className={styles.styleButton}
             variant="contained"
-            sx={{ background: '#367917cc' }}
+            sx={{ background: "#367917cc" }}
             onClick={() => setOpenQuiz(true)}
           >
             🎯 Start Quizz
@@ -40,7 +45,7 @@ export default function HomePage() {
           <Button
             className={styles.styleButton}
             variant="contained"
-            sx={{ background: '#265a91c4' }}
+            sx={{ background: "#265a91c4" }}
             onClick={() => setAddCard(true)}
           >
             ➕ Add New Card
@@ -49,7 +54,7 @@ export default function HomePage() {
           <Button
             className={styles.styleButton}
             variant="outlined"
-            sx={{ background: '#8bbbc6' }}
+            sx={{ background: "#8bbbc6" }}
             onClick={() => router.push("/Cards")}
           >
             📖 See All Cards
@@ -57,11 +62,19 @@ export default function HomePage() {
         </Stack>
       </Box>
 
-      <CustomDialog title="🎯 Quiz of the day" open={openQuiz} onClose={() => setOpenQuiz(false)}>
+      <CustomDialog
+        title="🎯 Quiz of the day"
+        open={openQuiz}
+        onClose={() => setOpenQuiz(false)}
+      >
         <Quizz />
       </CustomDialog>
 
-      <CustomDialog title="Add New Card" open={addCard} onClose={() => setAddCard(false)}>
+      <CustomDialog
+        title="Add New Card"
+        open={addCard}
+        onClose={() => setAddCard(false)}
+      >
         <PopupAddCard closePopupCreation={() => setAddCard(false)} />
       </CustomDialog>
     </Grid2>

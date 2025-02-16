@@ -39,7 +39,7 @@ class QuizService extends QuizServicePort {
       userId,
       ...quizData,
       createdAt: new Date(),
-      status: Quiz.STATUSES.PENDING
+      status: Quiz.STATUSES.PENDING,
     });
 
     await this.quizRepositoryPort.save(quiz);

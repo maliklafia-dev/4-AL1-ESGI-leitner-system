@@ -1,5 +1,13 @@
-import { useState } from "react";
-import { Box, Button, Grid2, TextField, Typography, Snackbar, Alert } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Grid2,
+  TextField,
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { champs } from "../../utils/inputsCreateCard";
 
 export default function PopupAddCard({ closePopupCreation }) {
@@ -8,25 +16,35 @@ export default function PopupAddCard({ closePopupCreation }) {
     champs.map((input) => ({
       ...input,
       value: input.value || "",
-    }))
+    })),
   );
 
-  const handleInputChange = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    id: string,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const { value } = event.target;
     setInputs((prevInputs) =>
-      prevInputs.map((input) => (input.id === id ? { ...input, value: value } : input))
+      prevInputs.map((input) =>
+        input.id === id ? { ...input, value: value } : input,
+      ),
     );
   };
 
   const handleRegister = async () => {
-    const cardData = Object.fromEntries(inputs.map((input) => [input.id, input.value]));
+    const cardData = Object.fromEntries(
+      inputs.map((input) => [input.id, input.value]),
+    );
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cards`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cardData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/cards`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cardData),
+        },
+      );
 
       if (!response.ok) throw new Error("Erreur lors de l'ajout de la carte");
 
@@ -39,7 +57,8 @@ export default function PopupAddCard({ closePopupCreation }) {
     }
   };
 
-  const isDisable = () => inputs.some((input) => input.required && !input.value);
+  const isDisable = () =>
+    inputs.some((input) => input.required && !input.value);
 
   return (
     <Box>
@@ -56,7 +75,9 @@ export default function PopupAddCard({ closePopupCreation }) {
           sx={{ mb: 2, marginLeft: 5 }}
         >
           <Grid2 size={3}>
-            <Typography sx={{ fontWeight: 510 }}>{input.name} {input.required && " *"}</Typography>
+            <Typography sx={{ fontWeight: 510 }}>
+              {input.name} {input.required && " *"}
+            </Typography>
           </Grid2>
           <Grid2 size={8}>
             <TextField
@@ -83,14 +104,18 @@ export default function PopupAddCard({ closePopupCreation }) {
             fontWeight: "bold",
             p: 1.5,
             width: "30%",
-            height: '40px'
+            height: "40px",
           }}
         >
           Add
         </Button>
       </Box>
 
-      <Snackbar open={!!successMessage} autoHideDuration={3000} onClose={() => setSuccessMessage("")}>
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage("")}
+      >
         <Alert severity="success">{successMessage}</Alert>
       </Snackbar>
     </Box>
